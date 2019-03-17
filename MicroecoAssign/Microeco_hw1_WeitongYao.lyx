@@ -1,0 +1,954 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{CJK}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\pdf_title "Teaching Effectiveness Summary"
+\pdf_author "Jiaming Mao"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.2in
+\rightmargin 1.2in
+\bottommargin 1.25in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation 0in
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{CJK}{UTF8}{gbsn}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Brief Introduction of Bayesian Estimation
+\end_layout
+
+\begin_layout Author
+Yao Weitong
+\end_layout
+
+\begin_layout Standard
+Bayesian statistics is a huge system.
+ Different authors have slightly different interpretations of Bayesian estimatio
+n.
+ This article is a concise synthesis of many textbooks, contains the recommended
+ chapters in those books, and is a brief introduction to Bayesian estimates
+ from the perspective of non-statistical major.
+ You can follow the textbooks listed in the Reference for in-depth study.
+\end_layout
+
+\begin_layout Section
+Importance of prior probability
+\end_layout
+
+\begin_layout Standard
+As an example, when a guy purchases a life insurance, the insurance company
+ will estimate the probability of the insured's risk and determine the premium.
+ According to the classical frequentists, the person is considered as a
+ certain individual of the sample with same features of age, income, etc..
+ However, information asymmetry always arises, and that’s the limitation
+ of excluding the personal prior information of the insured.
+ If the insurance company fails to conduct a prior investigation, the insured
+ may have individual differences compared with the sample; and the investigation
+ of the medical records and living habits of the insured in the past is
+ capable to update the estimated probability.
+ Another example stresses the critical role played by prior probabilities
+ in estimation.
+ The mathematician named John Craven proposed a search scheme for a successful
+ search of lost USS Scorpion (SSN-589), using the Bayesian formula.
+ He used the probability map of the sea area, which was divided into many
+ small squares with two probability p and q.
+ p is the probability that the submarine lies in this square.
+ q is the probability that it was searched if the submarine is in this grid.
+ If a grid is searched and no trace of the submarine is found, then according
+ to the Bayesian formula, the probability of existence of the lattice submarine
+ will decrease
+\begin_inset Formula $p'=\frac{p(1-q)}{(1-p)+p(1-q)}$
+\end_inset
+
+ ; since the sum of probabilities is 1, then the probability value of other
+ grid will be rise
+\begin_inset Formula $r'=\frac{r}{1-pq}>r$
+\end_inset
+
+ (change in prior probability)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "1"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Frequentists and Bayesians
+\end_layout
+
+\begin_layout Itemize
+For standard Frequentists, probability requires a lot of repeated sampling
+ and the parameters are considered fixed but unknown.
+ Frequency indicates probability.
+ The Bayesians believe that the data should be fixed, the parameters are
+ random, the frequency is a description of the degree of uncertainty, and
+ the probability should be based on our understanding of the world or previous
+ studies.
+\end_layout
+
+\begin_layout Itemize
+In practice, Frequentists determine the specific values (e.g.
+ expectations, variances, etc.) of the parameters by optimization criteria
+ (e.g.
+ maximize likelihood function), and derive conclusions from a single data
+ set.
+ In the Bayesian view, given the observation data, the first step is to
+ model a prior distribution, and then repeatedly apply Bayes' theorem, combine
+ the data set (as a prior probability distribution), and continuously update
+ the probability to calculate posterior probability distribution.
+ The result is a distribution rather than a specific value, so it needs
+ sampling for further statistical inference.
+\end_layout
+
+\begin_layout Standard
+Take an example; suppose we want to study the influence of Trump's Twitter
+ content on the exchange rate of US dollars against RMB.
+ Firstly, the text analysis method is used to extract the keyword frequency
+ of the emotional judgment and intention, and regressed on the exchange
+ rate fluctuation of the corresponding time period.
+ This is what the Frequentists usually do.
+ However, Bayesians believe that all other factors that affect exchange
+ rate movements should be considered to construct a prior probability distributi
+on (using the same data set of other factors used by Frequentists), and
+ the content of the Twitter is used to update beliefs
+\begin_inset CommandInset citation
+LatexCommand cite
+key "2"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Bayes's Theorem and Bayesian Estimation
+\end_layout
+
+\begin_layout Standard
+For a random vector 𝜃 (as parameters) and random vector 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+𝐷
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ (as data set), the Bayes's Theorem indicates:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{𝑝}(𝜃∣𝐷)=\dfrac{\text{𝑝}(\text{𝐷∣𝜃})\text{𝑝}(\text{𝜃})}{\text{𝑝}(\text{𝐷})}
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\text{𝑝}(\text{𝜃∣𝐷})$
+\end_inset
+
+is the posterior probability distribution; 
+\begin_inset Formula $\text{𝑝}(\text{𝐷∣𝜃})$
+\end_inset
+
+ is considered the function of 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+𝜃, always denoted as likelihood function
+\begin_inset Formula $\text{𝐿}(\text{𝜃; 𝐷})$
+\end_inset
+
+, indicating the probability of observation under certain 𝜃; and 
+\begin_inset Formula $\text{𝑝}(\text{𝜃})$
+\end_inset
+
+ is prior probability distribution.
+ The denominator 
+\begin_inset Formula $\text{𝑝}(\text{𝐷})$
+\end_inset
+
+ is a normalized constant, which makes sure posterior probability integral
+ equal to 1, and posterior distribution can be directly proportional to
+ the numerator(or said 
+\begin_inset Quotes eld
+\end_inset
+
+density kernel
+\begin_inset Quotes erd
+\end_inset
+
+): 
+\begin_inset Formula 
+\[
+posterior\propto likelihood\times prior
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Example of Gauss Distribution Estimation
+\begin_inset CommandInset citation
+LatexCommand cite
+key "3"
+literal "false"
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "4"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose the random sample is 
+\begin_inset Formula $\text{𝐷}=(d1,d2,...,dn)'$
+\end_inset
+
+, where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+𝐷
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is the Gaussian distribution with known variance 
+\begin_inset Formula $𝜎^{2}$
+\end_inset
+
+ and unknown mean 
+\begin_inset Formula $\text{𝜇}$
+\end_inset
+
+, find the mean
+\begin_inset Formula $\text{𝜇}$
+\end_inset
+
+.
+ Frequentists use MLE to solve the problem, whilst Bayesians prefer to applying
+ prior distribution and implementing with three steps.
+\end_layout
+
+\begin_layout Subsubsection*
+1.
+ Model Prior Distribution 
+\shape italic
+𝑝
+\shape default
+(
+\shape italic
+𝜃
+\shape default
+):
+\end_layout
+
+\begin_layout Standard
+Since target distribution is normal and conjugative, it's reasonable to
+ set 
+\begin_inset Formula $\text{𝜃}∼N(\text{𝜇}_{0},𝜎_{0}^{2})$
+\end_inset
+
+; define 
+\series bold
+\shape italic
+presion
+\series default
+\shape default
+ of 
+\begin_inset Formula $\text{𝜃}$
+\end_inset
+
+ as follows, the larger the 
+\shape italic
+presion
+\shape default
+ 
+\begin_inset Formula $h$
+\end_inset
+
+ is, the smaller the 
+\begin_inset Formula $\text{𝜎_{0}^{2}}$
+\end_inset
+
+ will be.
+\begin_inset Formula 
+\[
+h≡\frac{1}{\text{𝜎}_{0}^{2}}
+\]
+
+\end_inset
+
+the prior distribution of 
+\begin_inset Formula $\text{𝜃}$
+\end_inset
+
+ is:
+\begin_inset Formula 
+\[
+\text{𝑝}(\text{𝜃})=\dfrac{1}{\sqrt{2\text{𝜋}𝜎_{0}^{2}}}exp\left\{ -(𝜃-\text{𝜇}_{0})^{2}/2\text{𝜎}_{0}^{2}\right\} \:\propto\:exp\left\{ -h(\text{𝜃}-\text{𝜇}_{0})^{2}/2\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+2.
+ Model Likelihood Function 
+\shape italic
+L
+\shape default
+(
+\shape italic
+𝜃; 𝐷)
+\shape default
+(i.i.d):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{𝐿}(\text{𝜃; 𝐷})=\prod_{i=1}^{n}(2\text{𝜋}𝜎^{2})^{-1/2}exp\left\{ -(d_{i}-\text{𝜃})^{2}/2𝜎^{2}\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=(2\text{𝜋}\text{𝜎}^{2})^{-n/2}exp\left\{ -\sum_{i=1}^{n}(d_{i}-\text{𝜃})^{2}/2\text{𝜎}^{2}\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\propto exp\left\{ -\sum_{i=1}^{n}(\bar{d}-\text{𝜃})^{2}/2\text{𝜎}^{2}\right\} \:\propto\:exp\left\{ -h^{*}(\bar{d}-\text{\ensuremath{\theta}})^{2}/2\right\} 
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $h^{*}=n/\text{𝜎}^{2}$
+\end_inset
+
+.
+ Obviously, the likelihood function (rather a PDF of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+𝜃
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ ) has similar formation as prior distribution, they are conjugate distribution.
+ Since the multiplication of Gaussian functions is the summation of exponents,
+ thus posterior probability is also a Gaussian distribution.
+\end_layout
+
+\begin_layout Subsubsection*
+3.
+ Model Posterior Distribution 
+\shape italic
+𝑝
+\shape default
+(
+\shape italic
+𝜃
+\shape default
+ | 
+\shape italic
+D
+\shape default
+) = 
+\shape italic
+N
+\shape default
+(
+\shape italic
+𝜃
+\shape default
+ | 
+\begin_inset Formula $\text{𝜇}_{N},\text{𝜎}_{N}^{2}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{𝑝}(\text{𝜃∣𝐷})\:\propto\:\text{𝐿}(\text{𝜃; 𝐷})\text{𝑝}(\text{𝜃})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\propto exp\left\{ -h^{*}(\bar{d}-\text{𝜃})^{2}/2\right\} \,\text{∙}\,exp\left\{ -h(\text{𝜃}-\text{𝜇})^{2}/2\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=exp\left\{ -\dfrac{1}{2}\left[h^{*}(\bar{d}-𝜃)^{2}+h(\text{𝜃}-\text{𝜇})^{2}\right]\right\} \:\propto\:\bar{h}(\text{𝜃}-\bar{μ})^{2}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\bar{h}=h+h^{*},\bar{\text{ 𝜇}}≡(h\text{𝜇}+h^{*}\bar{d})/\bar{h}$
+\end_inset
+
+, another forms are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{𝜇}_{N}=\bar{\text{𝜇}}=\dfrac{\text{𝜎}^{2}}{N\text{𝜎}_{0}^{2}+\text{𝜎}^{2}}\text{𝜇}_{0}+\dfrac{N\text{\text{𝜎}_{0}^{2}}}{N\text{𝜎}_{0}^{2}+\text{𝜎}^{2}}\text{𝜇}_{ML}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{h}=\dfrac{1}{\text{𝜎}_{N}^{2}}=\dfrac{1}{\text{𝜎}_{0}^{2}}+\dfrac{N}{\text{𝜎}^{2}}
+\]
+
+\end_inset
+
+From the inference shown above, it's clear that 
+\begin_inset Formula $\text{𝜇}_{N}∈\left[\text{ 𝜇}_{0},\text{𝜇}_{ML}\right]$
+\end_inset
+
+, when
+\begin_inset Formula $N\rightarrow0,\text{𝜇}_{N}\rightarrow\text{𝜇}_{0}$
+\end_inset
+
+; when 
+\begin_inset Formula $N\rightarrow∞,\text{𝜇}_{N}\rightarrow\text{𝜇}_{ML}$
+\end_inset
+
+, at the same time, 
+\begin_inset Formula $\bar{h}\rightarrow\text{∞}$
+\end_inset
+
+ and 
+\begin_inset Formula $\text{𝜎}_{N}^{2}\rightarrow0$
+\end_inset
+
+.
+ When 
+\begin_inset Formula $N$
+\end_inset
+
+ tends to be infinite, it connotes the presion of the sample is more and
+ more important for the posterior presion, and the posterior distribution
+ is almost not affected by the prior distribution, which helps to offset
+ the shortcomings of subjective prior distribution.
+ Another question is how we can calculate the posterior probability distribution.
+\end_layout
+
+\begin_layout Subsection
+Estimation of Posterior Probability Distribution
+\begin_inset CommandInset citation
+LatexCommand cite
+key "5"
+literal "false"
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "6"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+
+\shape italic
+Monte Carlo Integral
+\end_layout
+
+\begin_layout Standard
+\noindent
+Let 
+\begin_inset Formula $𝜃^{(s)}$
+\end_inset
+
+ for 
+\begin_inset Formula $s=1,...,S$
+\end_inset
+
+ be a random sample from 
+\begin_inset Formula $\text{𝑝}(\text{𝜃∣𝐷})$
+\end_inset
+
+, and define 
+\begin_inset Formula $\hat{I}_{MC}=\frac{1}{S}\sum_{s=1}^{S}f(\theta^{(s)})$
+\end_inset
+
+, then 
+\begin_inset Formula $\hat{f}_{s}$
+\end_inset
+
+ converges to 
+\begin_inset Formula $E\text{\left[f(𝜃)∣D\right]}$
+\end_inset
+
+ as 
+\begin_inset Formula $S$
+\end_inset
+
+ goes to infinity.
+\end_layout
+
+\begin_layout Standard
+\noindent
+When the posterior distribution has an analytical formula, the Monte Carlo
+ integral method is commonly used for the posterior mean calculation.Using
+ the theorem, it allows to approximate 
+\begin_inset Formula $E\text{\ensuremath{\left[f(\theta)\mid D\right]}}$
+\end_inset
+
+, and the numerical standard error
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\[
+\sqrt{S}\left\{ \hat{f}_{s}-E\text{\ensuremath{\left[f(\theta)\mid D\right]}}\right\} \rightarrow N(0,\text{\ensuremath{\sigma}}_{f}^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+can ensure the difference is sufficiently small.
+\end_layout
+
+\begin_layout Subsubsection
+
+\shape italic
+Markov chain Monte Carlo (Gibbs sampler)
+\end_layout
+
+\begin_layout Standard
+When the integrals of posterior distribution is so complex or it has no
+ analytical formula, it's necceary to derive a random sample from posterior
+ distribution for further inference.
+ One of popular sampler is 
+\series bold
+\shape italic
+Markov chain Monte Carlo sampling
+\series default
+\shape default
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+Suppose the distribution of 
+\begin_inset Formula $X=(X_{1},X_{2},\text{...,X_{n}})$
+\end_inset
+
+ is 
+\begin_inset Formula $f(x\text{)}$
+\end_inset
+
+, for any fixed 
+\begin_inset Formula $T\text{∈}N\left\{ 1,2,...,n\right\} $
+\end_inset
+
+, given 
+\begin_inset Formula $X_{-T}=x_{-T},$
+\end_inset
+
+define 
+\begin_inset Formula $\tilde{X}=(\tilde{x}_{1}',\tilde{x}_{2},\text{...,\tilde{x}_{n}})$
+\end_inset
+
+, for any testible 
+\begin_inset Formula $B$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(\tilde{X}\text{∈}B)=\int_{B}𝜋(\tilde{x}_{-T})\text{𝜋}(\tilde{x}_{-T}∣\tilde{x}_{-T})d\tilde{x}=\int_{B}\text{𝜋}(\text{𝜋}(\tilde{x})d\tilde{x}=\text{𝜋}(B)
+\]
+
+\end_inset
+
+thus, from 
+\begin_inset Formula $X$
+\end_inset
+
+ to 
+\begin_inset Formula $X'$
+\end_inset
+
+, they have stationary distributions (the PDF is unchanged), and it's called
+ 
+\series bold
+\shape italic
+Gibbs sampler.
+\end_layout
+
+\begin_layout Bibliography
+\paragraph_spacing other 0.15
+\noindent
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "1"
+literal "false"
+
+\end_inset
+
+
+\size footnotesize
+邓一硕,关菁菁,刘辰昂,邱怡轩,施涛,熊熹,周祺.
+ 统计之都创作小组: 失联搜救中的统计数据分析.
+\end_layout
+
+\begin_layout Bibliography
+\paragraph_spacing other 0.15
+\noindent
+
+\size footnotesize
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "2"
+literal "false"
+
+\end_inset
+
+Jakevdp(Jake Vanderplas) 
+\shape italic
+.
+\shape default
+2014
+\shape italic
+.Frequentism and Bayesianism: A Practical Introduction.
+\shape default
+GitHub.
+\end_layout
+
+\begin_layout Bibliography
+\paragraph_spacing other 0.15
+\noindent
+
+\size footnotesize
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "3"
+literal "false"
+
+\end_inset
+
+陈强编.2010.《高级计量经济学及stata应用》,Chapter19,31.
+\end_layout
+
+\begin_layout Bibliography
+\paragraph_spacing other 0.15
+\noindent
+
+\size footnotesize
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "4"
+literal "false"
+
+\end_inset
+
+Bishop, C.
+ M.
+ 2011.
+ 
+\shape italic
+Pattern Recognition and Machine Learning.
+ 
+\shape default
+Springer.
+\end_layout
+
+\begin_layout Bibliography
+\paragraph_spacing other 0.15
+\noindent
+
+\size footnotesize
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "5"
+literal "false"
+
+\end_inset
+
+Gary Koop.
+ 2003.
+ 
+\shape italic
+Bayesian Economics.
+\end_layout
+
+\begin_layout Bibliography
+\paragraph_spacing other 0.15
+\noindent
+
+\size footnotesize
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "6"
+literal "false"
+
+\end_inset
+
+朱明惠, 林静著.《贝叶斯计量经济学模型》
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{CJK}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
