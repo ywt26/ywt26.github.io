@@ -1,0 +1,853 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{CJK}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{
+  %行号
+  numbers=left,
+  %背景框
+  framexleftmargin=10mm,
+  frame=none,
+  %背景色
+  %backgroundcolor=\color[rgb]{1,1,0.76},
+  backgroundcolor=\color[RGB]{245,245,244},
+  %样式
+  keywordstyle=\bf\color{blue},
+  identifierstyle=\bf,
+  numberstyle=\color[RGB]{0,192,192},
+  commentstyle=\it\color[RGB]{0,96,96},
+  stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},
+  %显示空格
+  showstringspaces=false,
+  xleftmargin=2em, %边距
+  xrightmargin=2em, 
+  aboveskip=1em
+}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\pdf_title "Teaching Effectiveness Summary"
+\pdf_author "Jiaming Mao"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.2in
+\rightmargin 1.2in
+\bottommargin 1.25in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation 0in
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{CJK}{UTF8}{gbsn}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Does Housing Price Impede the Rising Birth Rate?
+\end_layout
+
+\begin_layout Author
+Yao Weitong
+\end_layout
+
+\begin_layout Standard
+According to the Malthusian theory of population, it’s the idea that population
+ growth is potentially exponential while the growth of the food supply is
+ linear.
+ Malthusianism has concluded two “checks” to impede the population growth:
+ “preventive checks” (moral restraints) and “positive checks” (disease,
+ starvation, war.etc.).
+ Obviously, technology development hasn’t been taken into account by Malthusian;
+ in another words, these “checks” affect little in modern society, and the
+ population of the world will rise dramatically (and it does!)
+\begin_inset Formula $^{[1]}$
+\end_inset
+
+.
+ However, some people study the relationship between high housing price
+ and declining birth rate in Japan and they consider the rising housing
+ price, as cost of raising babies, is a kind of “check” of Malthusiam.
+ Is it true and general? Based on the dramatically increasing housing price
+ in China since 2008, I would like to check whether housing prices do reduce
+ fertility in the long run.
+\end_layout
+
+\begin_layout Section
+Regression Analysis
+\end_layout
+
+\begin_layout Standard
+Fertility rates are linked to many factors, such as the cost of raising
+ children – rising house prices, education – especially the ratio of female
+ educated, women’s labor participation rate, the idea of 
+\begin_inset Quotes eld
+\end_inset
+
+rearing kids for old age
+\begin_inset Quotes erd
+\end_inset
+
+ – reflected in pension expenditures and the entire society’s elderly dependency
+ rate.
+ This passage collects data from the National Bureau of Statistics in mainland
+ China from 2000 to 2017, and supplements it with data from the China Statistica
+l Yearbook to make a simple multiple linear regression and to make a simple
+ diagnosis of the model.
+\end_layout
+
+\begin_layout Subsection
+Variable Descriptions and Multiple Linear Regression Analysis
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="2">
+<features islongtable="true" longtabularalignment="center">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Variable
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+birthrate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+yearly fertility rate
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+femalegrow
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+growth rate of female labor participation rate
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+houseprice_rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+growth rate of residential house prices (rmb per square)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+pensionout
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+proportion of social pension spending
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+devocerate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+crude devorce rate
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+bachelor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+number of undergraduates
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+consumpgrow
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+growth rate of consumer price index
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+gdppergrow
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+growth rate of gdp per capita
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Birthrate_{t}=𝛽_{0}+\text{𝛽}_{1}housepricerate_{t-1}+\text{𝛽}_{2}femalegrow_{t-1}+\text{𝛽}_{3}pensionout_{t-1}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
++\text{𝛽}_{4}devocerate_{t-1}+\text{𝛽}_{5}bachelor_{t-1}+\text{𝛽}_{6}consumpgrow_{t-1}+\text{𝛽}_{7}gdppergrow_{t-1}+𝑒_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The regression result and assessment of multiple linear model are as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename )%`BYT~WOLKG9RH}W7D$01D.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename $Z3_8A~M3$]G5)N22C([7QE.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next, check the multicollinearity of this model:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename 已粘贴1.png
+	scale 65
+	BoundingBox 0bp 0bp 777bp 662bp
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename 已粘贴2.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Obviously, there is a problem of multicollinearity in this linear regression.
+ To improve this modle, the passage uses ridge regression instead of simple
+ multiple linear regression.
+\end_layout
+
+\begin_layout Subsection
+Ridge Regression
+\begin_inset Formula $^{[2,3]}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The logit that ridge regression can solve multicollinearity problem is to
+ reduce the variance of parameter estimators, at the cost of sacrifying
+ unbiasness.
+ The general principle of ridge regression is to add a constraint to the
+ parameter after the cost function, based on the MLE.
+ This constraint is called a 
+\series bold
+regularizer
+\series default
+.
+ The cost function of ridge regression is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+J(𝜃)=\frac{1}{n}\sum_{i=1}^{n}(Y_{i}-BX_{i})^{2}+𝜆||B||^{2}=MSE(𝜃)+𝜆\sum_{i=1}^{m}𝜃_{i}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $B$
+\end_inset
+
+ is a coefficient vector excluding intercept term; 
+\begin_inset Formula $𝜃$
+\end_inset
+
+ is a n+1 vector including intercept term 
+\begin_inset Formula $𝜃_{0}$
+\end_inset
+
+; 
+\begin_inset Formula $n$
+\end_inset
+
+ is the sample size and 
+\begin_inset Formula $m$
+\end_inset
+
+ is the number of independent variables.
+ By making the gradient of 
+
+\begin_inset Formula $J(𝜃)$
+\end_inset
+
+
+ equal to 0, the optimal solution to minimize 
+\begin_inset Formula $J(𝜃)$
+\end_inset
+
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+𝜃=(X^{T}X+𝜆I)^{-1}(X^{T}Y)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here are the ridge regression results; the significance of regression coefficien
+t is significantly higher than that of multiple linear regression.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename 已粘贴3.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename )3B0SM_Q5U4F}3Y]%4%O0{J.png
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Explanation of Results
+\end_layout
+
+\begin_layout Standard
+The results show that in the long run, the feritility rate is only negatively
+ correlated with the divorce rate and education.
+ The influence of devorce rate is greater in an economical sense, and the
+ statistical results are more significant, too.
+ It has nothing to do with the rate of house price appreciation.
+ Further, assuming that there is a strong correlation between the increase
+ in house prices and the divorce rate, I further run two regression and
+ find that the results are either insignificant or significant but weakly
+ correlated.
+ Although the cost of raising children is rising when house prices rise,
+ the regression shows that women's labor participation rate and GDP growth
+ explain the decline in child dependency ratio more.
+ Therefore, the decline in fertility in the long-term cannot be attributed
+ to the rise in housing prices; or said, the house as a fixed asset is the
+ main collateral for developers and corporate borrowing.
+ In order to maintain the normal economy operation, the government would
+ like maintain stability rather than suppress it.
+ Directly speaking, it is an inevitable trend that house prices are at high
+ prices, but people wouldn't choose to be DINK because of this.
+ It is obvious that the house only temporarily sway the decision of fertility,
+ but it cannot affect fertility in the long run.
+\end_layout
+
+\begin_layout Section
+Conclusion and Other Evidences
+\end_layout
+
+\begin_layout Standard
+Other evidences can show why they are not exactly negatively correlated.
+ First is about the two-sided impacts.
+ According to
+\shape italic
+ Lisa J.Dettling and Melissa S.Kearne
+\shape default
+y
+\begin_inset Formula $^{[4]}$
+\end_inset
+
+, current house prices can lead to a negative effect on the fertility rates
+ among renters but positive effect on births among homeowners during the
+ current period and these two effects can offset each other.
+ Second, children-rearing cost is a bridge linking housing prices and fertility
+ rate, however, the young dependency rate is falling in recent year, from
+ the data collected from National Bureau of Statistics.
+ In other words, if having a children but not raising them, then the impact
+ of housing prices on fertility rate will not be established.
+ Third one is the elasticity issue.
+ By 
+\shape italic
+Creina Day and Ross Guest
+\shape default
+
+\begin_inset Formula $^{[5]}$
+\end_inset
+
+, the key is the level of substitution effect of rising female wages on
+ fertility depends on how important housing is as a cost of children; price
+ elasticity of housing supply is low in Asia, so the increasing wage leads
+ to decreasing birth rate.
+ Things are different in western countries, where housing supply is relatively
+ price elastic.
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+
+\size small
+[1]
+\shape italic
+ Malthusiam
+\shape default
+, wikipedia.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+
+\size small
+[2] 
+\shape italic
+M.
+ El-Dereny and N.I.
+ Rashwan.
+
+\shape default
+ 2011.
+ Solving Multicollinearity Problem Using Ridge Regression Models.
+ Int J.
+ Contemp.
+ Math.
+ Sciences, Vol.6,2001, no.12,585-600.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+
+\size small
+[3] 
+\begin_inset CommandInset href
+LatexCommand href
+name "【机器学习】正则化的线性回归 —— 岭回归与Lasso回归"
+target "https://www.cnblogs.com/Belter/p/8536939.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+
+\size small
+[4] 
+\shape italic
+Lisa J.Dettling and Melissa S.Kearney
+\shape default
+.2016.
+ Fertility and female wages: A new link via house prices.
+ Economic Modelling.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing onehalf
+
+\size small
+[5] 
+\shape italic
+Creina Day and Ross Guest.
+ 
+\shape default
+2014.
+ House prices and birth rates: The impact of the real estate market on the
+ decision to have a baby.
+ Journal of Public Economics
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{CJK}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

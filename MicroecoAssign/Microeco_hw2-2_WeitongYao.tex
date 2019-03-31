@@ -1,0 +1,240 @@
+%% LyX 2.3.2-2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[12pt,english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,bmargin=1.25in,lmargin=1.2in,rmargin=1.2in}
+\setlength{\parindent}{0in}
+\usepackage{babel}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage[unicode=true]
+ {hyperref}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+
+\@ifundefined{date}{}{\date{}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{CJK}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{
+  %行号
+  numbers=left,
+  %背景框
+  framexleftmargin=10mm,
+  frame=none,
+  %背景色
+  %backgroundcolor=\color[rgb]{1,1,0.76},
+  backgroundcolor=\color[RGB]{245,245,244},
+  %样式
+  keywordstyle=\bf\color{blue},
+  identifierstyle=\bf,
+  numberstyle=\color[RGB]{0,192,192},
+  commentstyle=\it\color[RGB]{0,96,96},
+  stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},
+  %显示空格
+  showstringspaces=false,
+  xleftmargin=2em, %边距
+  xrightmargin=2em, 
+  aboveskip=1em
+}
+
+\makeatother
+
+\begin{document}
+\begin{CJK}{UTF8}{gbsn}
+\title{Does Housing Price Impede the Rising Birth Rate?}
+\author{Yao Weitong}
+
+\maketitle
+According to the Malthusian theory of population, it’s the idea that
+population growth is potentially exponential while the growth of the
+food supply is linear. Malthusianism has concluded two “checks” to
+impede the population growth: “preventive checks” (moral restraints)
+and “positive checks” (disease, starvation, war.etc.). Obviously,
+technology development hasn’t been taken into account by Malthusian;
+in another words, these “checks” affect little in modern society,
+and the population of the world will rise dramatically (and it does!)$^{[1]}$.
+However, some people study the relationship between high housing price
+and declining birth rate in Japan and they consider the rising housing
+price, as cost of raising babies, is a kind of “check” of Malthusiam.
+Is it true and general? Based on the dramatically increasing housing
+price in China since 2008, I would like to check whether housing prices
+do reduce fertility in the long run.
+
+\section{Regression Analysis}
+
+Fertility rates are linked to many factors, such as the cost of raising
+children -- rising house prices, education -- especially the ratio
+of female educated, women’s labor participation rate, the idea of
+``rearing kids for old age'' -- reflected in pension expenditures
+and the entire society’s elderly dependency rate. This passage collects
+data from the National Bureau of Statistics in mainland China from
+2000 to 2017, and supplements it with data from the China Statistical
+Yearbook to make a simple multiple linear regression and to make a
+simple diagnosis of the model.
+
+\subsection{Variable Descriptions and Multiple Linear Regression Analysis}
+
+\begin{longtable}[c]{ll}
+\textbf{Variable} & \textbf{Description}\tabularnewline
+{\small{}birthrate} & {\small{}yearly fertility rate}\tabularnewline
+{\small{}femalegrow} & {\small{}growth rate of female labor participation rate}\tabularnewline
+{\small{}houseprice\_rate} & {\small{}growth rate of residential house prices (rmb per square)}\tabularnewline
+{\small{}pensionout} & {\small{}proportion of social pension spending}\tabularnewline
+{\small{}devocerate} & {\small{}crude devorce rate}\tabularnewline
+{\small{}bachelor} & {\small{}number of undergraduates}\tabularnewline
+{\small{}consumpgrow} & {\small{}growth rate of consumer price index}\tabularnewline
+{\small{}gdppergrow} & {\small{}growth rate of gdp per capita}\tabularnewline
+ & \tabularnewline
+\end{longtable}
+
+\[
+Birthrate_{t}=\beta_{0}+\text{\ensuremath{\beta}}_{1}housepricerate_{t-1}+\text{\ensuremath{\beta}}_{2}femalegrow_{t-1}+\text{\ensuremath{\beta}}_{3}pensionout_{t-1}
+\]
+\[
++\text{\ensuremath{\beta}}_{4}devocerate_{t-1}+\text{\ensuremath{\beta}}_{5}bachelor_{t-1}+\text{\ensuremath{\beta}}_{6}consumpgrow_{t-1}+\text{\ensuremath{\beta}}_{7}gdppergrow_{t-1}+e_{t}
+\]
+
+\begin{tabular}{c}
+\tabularnewline
+\end{tabular}
+
+The regression result and assessment of multiple linear model are
+as follows:
+
+\begin{tabular}{c}
+\tabularnewline
+\end{tabular}
+\begin{center}
+\includegraphics[scale=0.75]{)%`BYT\string~WOLKG9RH}W7D$01D}
+\par\end{center}
+
+\begin{center}
+\includegraphics[scale=0.75]{$Z3_8A\string~M3$]G5)N22C([7QE}
+\par\end{center}
+
+Next, check the multicollinearity of this model:
+\begin{center}
+\includegraphics[bb=0bp 0bp 583bp 496bp,scale=0.65]{已粘贴1}
+\par\end{center}
+
+\begin{center}
+\includegraphics[scale=0.65]{已粘贴2}
+\par\end{center}
+
+Obviously, there is a problem of multicollinearity in this linear
+regression. To improve this modle, the passage uses ridge regression
+instead of simple multiple linear regression.
+
+\subsection{Ridge Regression$^{[2,3]}$}
+
+The logit that ridge regression can solve multicollinearity problem
+is to reduce the variance of parameter estimators, at the cost of
+sacrifying unbiasness. The general principle of ridge regression is
+to add a constraint to the parameter after the cost function, based
+on the MLE. This constraint is called a \textbf{regularizer}. The
+cost function of ridge regression is
+
+\[
+J(\theta)=\frac{1}{n}\sum_{i=1}^{n}(Y_{i}-BX_{i})^{2}+\lambda||B||^{2}=MSE(\theta)+\lambda\sum_{i=1}^{m}\theta_{i}^{2}
+\]
+
+where $B$ is a coefficient vector excluding intercept term; $\theta$
+is a n+1 vector including intercept term $\theta_{0}$; $n$ is the
+sample size and $m$ is the number of independent variables. By making
+the gradient of $J(\theta)$ equal to 0, the optimal solution to minimize
+$J(\theta)$ is
+
+\[
+\theta=(X^{T}X+\lambda I)^{-1}(X^{T}Y)
+\]
+
+Here are the ridge regression results; the significance of regression
+coefficient is significantly higher than that of multiple linear regression.
+\begin{center}
+\includegraphics[scale=0.6]{已粘贴3}
+\par\end{center}
+
+\begin{center}
+\includegraphics[scale=0.75]{)3B0SM_Q5U4F}3Y]%4%O0{J}
+\par\end{center}
+
+\subsection{Explanation of Results}
+
+The results show that in the long run, the feritility rate is only
+negatively correlated with the divorce rate and education. The influence
+of devorce rate is greater in an economical sense, and the statistical
+results are more significant, too. It has nothing to do with the rate
+of house price appreciation. Further, assuming that there is a strong
+correlation between the increase in house prices and the divorce rate,
+I further run two regression and find that the results are either
+insignificant or significant but weakly correlated. Although the cost
+of raising children is rising when house prices rise, the regression
+shows that women's labor participation rate and GDP growth explain
+the decline in child dependency ratio more. Therefore, the decline
+in fertility in the long-term cannot be attributed to the rise in
+housing prices; or said, the house as a fixed asset is the main collateral
+for developers and corporate borrowing. In order to maintain the normal
+economy operation, the government would like maintain stability rather
+than suppress it. Directly speaking, it is an inevitable trend that
+house prices are at high prices, but people wouldn't choose to be
+DINK because of this. It is obvious that the house only temporarily
+sway the decision of fertility, but it cannot affect fertility in
+the long run.
+
+\section{Conclusion and Other Evidences}
+
+Other evidences can show why they are not exactly negatively correlated.
+First is about the two-sided impacts. According to\textit{ Lisa J.Dettling
+and Melissa S.Kearne}y$^{[4]}$, current house prices can lead to
+a negative effect on the fertility rates among renters but positive
+effect on births among homeowners during the current period and these
+two effects can offset each other. Second, children-rearing cost is
+a bridge linking housing prices and fertility rate, however, the young
+dependency rate is falling in recent year, from the data collected
+from National Bureau of Statistics. In other words, if having a children
+but not raising them, then the impact of housing prices on fertility
+rate will not be established. Third one is the elasticity issue. By
+\textit{Creina Day and Ross Guest}$^{[5]}$, the key is the level
+of substitution effect of rising female wages on fertility depends
+on how important housing is as a cost of children; price elasticity
+of housing supply is low in Asia, so the increasing wage leads to
+decreasing birth rate. Things are different in western countries,
+where housing supply is relatively price elastic.
+
+\section*{References}
+
+\begin{onehalfspace}
+{\small{}{[}1{]}}\textit{\small{} Malthusiam}{\small{}, wikipedia.}{\small\par}
+
+{\small{}{[}2{]} }\textit{\small{}M. El-Dereny and N.I. Rashwan.}{\small{}
+2011. Solving Multicollinearity Problem Using Ridge Regression Models.
+Int J. Contemp. Math. Sciences, Vol.6,2001, no.12,585-600.}{\small\par}
+
+{\small{}{[}3{]} \href{https://www.cnblogs.com/Belter/p/8536939.html}{【机器学习】正则化的线性回归 —— 岭回归与Lasso回归}}{\small\par}
+
+{\small{}{[}4{]} }\textit{\small{}Lisa J.Dettling and Melissa S.Kearney}{\small{}.2016.
+Fertility and female wages: A new link via house prices. Economic
+Modelling.}{\small\par}
+
+{\small{}{[}5{]} }\textit{\small{}Creina Day and Ross Guest. }{\small{}2014.
+House prices and birth rates: The impact of the real estate market
+on the decision to have a baby. Journal of Public Economics}{\small\par}
+\end{onehalfspace}
+
+\end{CJK}
+\end{document}
