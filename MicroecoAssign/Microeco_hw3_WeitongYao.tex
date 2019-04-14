@@ -1,0 +1,232 @@
+%!TEX program = xelatex
+\documentclass[cn]{elegantpaper}
+\usepackage{multirow}
+\usepackage{float}
+
+\title{离散选择模型——逻辑回归分类学习笔记\\ \emph{Supplement of Classification and Discrete Choice Model}}
+\version{1.0.0}
+\author{姚炜彤}
+
+
+
+\begin{document}
+
+\maketitle
+
+\songti{Classification and Discrete Choice Model(DCM)介绍了如何应用逻辑回归模型对离散选择模型进行分类，本文主要对Lecture的内容做学习回顾和框架总结（参考TA Session）并对已有框架的内容进行包括有序因变量、Logit两类模型—嵌套logit模型(the Nested Logit Regression)和混合Logit模型的衍生潜类模型进行补充。}
+
+%1 离散选择模型的原理回顾
+\section{离散选择模型的原理回顾}
+离散选择模型的原理是随机效用理论（random utility theory）（属于Probabilistic Choice Theory的范畴，用于衡量未关测到的或已观测到但无法测度的选择）。对于个体$i$每个选择$j$的效用公式为 $U_{ij} = V_{ij}+e_{ij}$ ,其中$V_{ij}$是驱动因素$X$的线性函数，因为可以被观测到或测度被称为系统性或代表性效用；$e_{ij}$是不可观测的，假定为随机干扰项；选择$j$的概率$\operatorname{P} (U_{ij}|X)$的分布取决于$e_{ij}$，利用效用最大化理论选择一般是$j=\operatorname{argmax}_{j} \operatorname{P} (U_{ij}|X)$。
+
+%2 变量的学习补充
+\section{变量的学习补充：定序型因变量}
+在一些经济领域的调查问卷我们通常会设置五分评级法，比如某一个地区的财政收入和该地区环境污染的研究调查，对于环境的评价会设置“非常严重”“严重”“中度”“轻度“”微弱“等选项，这些变量的设置存在单调趋势的关联，而且内在排序是统计推断的重要信息来源。尤其在列联表里，如果随着X的上升，Y也上升，称为相协（concordant）；反之X上升而Y下降，则是相异（discordant）；如果在X和Y的取值上相同则称相平（tied）。本小节主要介绍定序变量的相关性检验，分类赋值和相关的logit回归模型。
+%2.1 定序趋势检验：γ系数和Spearman系数
+\subsection{定序趋势检验：γ系数和Spearman系数}
+设$N_{c}$为相协对总数，$N_{d}$为相异对总数（$N_{c}$>$N_{d}$可以判断$X$上升伴随$Y$上升），用概率判断$\gamma$ = $\frac{N_{c}-N_{d}}{N_{c}+N_{d}}$，被称为$\gamma$系数（Goodman and Kruskal, 1954）。$\gamma$的取值范围为$[-1,1]$，当绝对值为1时意味着$X$和$Y$完全线性相关，绝对值越大相关性越强，如果完全独立则|y| = 0，但反之不成立。$Gamma$系数检验是定序变量相关性的最宽松检验，其他的常用检验系数还有Spearman相关系数。
+Spearman相关系数是用单调方程来评价两个统计变量的相关性，这里根据原始数据的排序位置（称为秩）代替原始数据进行计算。首先对变量（X,Y）进行排序，重新排序后的位置为秩，秩差$d_{i}$,数据个数为$n$, Spearman相关系数为：$\rho_{s}$ = 1-$\frac{6\sum d_{i}^2}{n(n^2-1)}$
+%2.2 定序变量的赋值
+\subsection{定序变量的赋值}
+赋值后的变量可以反应类别之间的距离。一种方法是等间距赋值，这种赋值无法反映类别之间的距离，但是适用于没有明显的类别距离或赋值选择的情况，比如说态度分类；反映距离的一种赋值方法是根据类别自动生成赋值，再使用每一类别所包括的对象的平均排序，又称中位秩作为赋值，比如类别1的对象排序为1到$N$，则排序的中位秩为$(1+N)/2$。缺点时当一个类别的数值较少时，相邻的类别有相近的中位秩。
+%2.3 定序变量的Logit回归
+\subsection{定序变量的Logit回归}
+这里介绍三类简单的Logit模型，此外还有比例发生模型，结合累计概率和线性预测的累积连结模型等。
+\begin{enumerate}
+%2.3.1 累积logit模型
+\item{累积logit模型(Cummulative Logit Model)}
+
+累积logit模型的特点是可以反映Y类别整体排序特征，估计不会随变量的类别数量和切点位置变化。
+假设一共有J个类别，定序因变量为Y(Y=1,2,...,J),累积概率的CDF为：
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation}
+P( Y\leq j | x) = \pi_{1}(x) + \pi_{2}(x) + ... +\pi_{j}(x),   j = 1, 2, ... J
+\end{equation}}
+则累积Logit定义为:
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{10pt}
+\begin{equation}
+\begin{split}
+L( Y \leq j | x) &= log \frac{P( Y \leq j | x)}{1-P( Y \leq j | x)}\\ 
+&= log  \frac{\pi_{1}(x) + \pi_{2}(x) + ... +\pi_{j}(x)}{\pi_{j+1}(x) + \pi_{j+2}(x) + ... +\pi_{J}(x)}, j = 1,2 ...J-1
+\end{split}
+\end{equation}}
+其分析整体排序特征的Logit表示如下，当Y和X相互独立时该式只剩下常数项，当X,Y相关时$\beta$不为零矩阵。特别的对于不同的$j$，该模型的截距项不同但是所有变量的系数$\beta$时相同的，不同类别的概率曲线在水平方向上平移。
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation}
+\begin{split}
+L( Y \leq j | x) = \alpha_{j} + \beta X, j=1,...,J-1
+\end{split}
+\end{equation}}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{4.png}
+\end{figure}
+对于同一类别$j$，不同自变量的相对发生比为不同$x_{1}$，$x_{2}$两个CDF比率的对数，在Classification and Discrete Choice Model Lecture的Blue Bus,Red Bus即是相对比例模型的应用（Blue Bus,Red Bus可以视为一个最简单的定序变量问题！）：
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation}
+\begin{split}
+L(Y\leq j | x_{1})-L(Y\leq j | x_{2}) = \beta (x_{1}-x_{2})
+\
+\end{split}
+\end{equation}}
+%2.3.2 连续logit模型
+\item{连续logit模型(Continuation-ratio Logit Model)}
+
+连续比logit模型适用于变量的连续过程存在序列特征的情况，主要应用在事件史分析上（e.g. 金融危机脱欧、中美贸易战,.etc？），定义为：
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation} 
+log \frac{P( Y = j |Y \geq j, X)}{P( Y \geq j+1 |Y \geq j, X)}
+\end{equation}}
+其中$\beta$会随分类$j$变化
+%2.3.3 相邻类别logit
+\item{相邻类别logit模型(Adjecent-categories Logit Model)}
+
+相邻类别logit反映Y类别之间的排序特征，反过来也意味着估计会随变量的类别数量和切点位置变化：
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation} 
+\begin{split}
+&log {P( Y = j |Y = j or j+1, X)} \\
+&= log \frac{\pi_{j}(x)}{\pi_{j+1}(x)}\\
+&= \alpha_{j}+\beta X
+\end{split}
+\end{equation}}
+反映了每改变一个类别发生的概率和相应的X的效应是多少。
+\end{enumerate}
+
+%3 Logit模型的学习补充
+\section{Logit模型的学习补充}
+%3.1 混合Logit模型的衍生
+\subsection{混合Logit模型的衍生}
+在Classification and Discrete Choice Model里已经介绍了几种解释变量：$X_{i}$(case-specific or individual specific)，$X_{j}$(individual-Alternative specific) 另外还有具有个体和选择效应的变量$X_{ij}$，并介绍了几种variable的模型构造情况。对于反映随机偏好差异的解释变量为$X_{ij}$变量的logit模型称为混合Logit模型(the Mixed logit)。另一类同样反映随机偏好差异，但相较混合Logit模型具有避免切点人为划分造成无意义分类优势的模型称为潜在类别模型（Latent class model, LC）。
+%3.1.1  潜类模型介绍
+\subsubsection{潜类模型介绍}
+潜在类别模型反映了潜在类本身的发生概率$P(Z=z)$和变量Y在该类别z下的条件概率$P(Y=y|Z=z)$。在条件独立假设下，变量Y=$(y_{1},y_{2},...y_{n})$在潜在分类K = $k$下的概率为:
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{0pt}
+\begin{equation} 
+\begin{split}
+P(Y_{1}=y_{1},Y_{2}=y_{2},Y_{n}=y_{n}|K=k)=P(Y_{1}=y_{1}|K=k)...P(Y_{n}=y_{n}|K=k)
+\end{split}
+\end{equation}}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{3.png}
+\end{figure}
+如果$(Y_{1},Y_{2},...Y_{n})$构造一个${n}\times{n}$列联表，则加上潜分类k形成${(n+1)}\times{(n+1)}$列联表，对于每个单元格发生概率为:
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation} 
+\begin{split}
+P_{y_{1},y_{2}...y_{n}}&=\sum_{k=1} P(Y_{1}=y_{1},Y_{2}=y_{2},Y_{n}=y_{n}|K=k)P(K=k)\\
+& = \sum_{k=1}{[\prod_{i=1}^{n} {P(Y_{i}=y_{i}|K=k)}]P(K=k)}
+\end{split}
+\end{equation}}
+
+%3.1.2 潜类别模型拟合
+\subsubsection{潜类别模型拟合}
+设{$\lambda y_{1},y_{2}...y_{n}$}为所观测单元格计数，对于所有单元格求和则多项分布的对数似然函数的核函数为：（Kernel function是将低维下无法分类或回归的特征经过非线性变换映射到高维空间进行分类、于高维空间非线性变换的内积相等的函数，详见支持向量机相关机器学习理论）$\sum{\lambda_{y_{1},y_{2}...y_{n}} log P_{y_{1},y_{2}...y_{n}}}$，利用EM算法使该似然函数最大化。
+
+%3.2 嵌套logit模型(the Nested Logit Regression)
+\subsection{嵌套logit模型(the Nested Logit Regression)}
+Multinomial，Conditional和Mixed Logit成立的前提是IIA，“Blue Bus, Red Bus”的例子已经体现了IIA假设局限性：否定了备选项间可能存在的相关性。显然”Blue Bus, Red Bus”例子是不满足IIA假设的。对此引入嵌套logit模型(the Nested Logit Regression，GEV model)（Ben-Akiva and McFadden），该模型适用于无法观测对象的备择选项很相似或者有很强的相关性的情况，解决方法是构造一个决策树，分层次构建集合，集合下又可以有多个数量不同的分支并且逐层嵌套。同层的子集不相关但同一子集内的选项相关。
+假设一个深度为2的决策树，第一层的备选有J个，对应的第二层的备选有$K_{j}$个，最终的选项表示为$j_{1}$,$j_{2}$,...,$J_{k_{j}}$，个体i效用函数定义为：
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation} 
+\begin{split}
+P_{jk} = \beta X_{jk}+ z_{j}\alpha_{j} + \epsilon_{jk}
+\end{split}
+\end{equation}}
+假设干扰项$\epsilon_{jk}$服从广义极值分布（GEV），累积分布表示如下。$\lambda_{k}=1$时说明$\epsilon_{jk}$互不相干。
+{\setlength\abovedisplayskip{5pt}
+\setlength\belowdisplayskip{5pt}
+\begin{equation} 
+\begin{split}
+F(e) = exp(-\sum_{k=1)}^K({\sum{e^{-\epsilon_{nj}/\lambda_{k}}}})^{\lambda_{k}})
+\end{split}
+\end{equation}}
+在第一层选择$j$的情况下，第二层k方案的概率为
+\begin{equation} 
+P_{jk} = Prob(choose\,j\,at\,level1选择)\times Prob(choose\,k\,at\,level2\,|\,j)
+\end{equation}
+对于“Blue Bus, Red Bus”的例子，其对应的树状图为：
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{5.png}
+\end{figure}
+
+\subsection{Logit模型其他分类模型的比较}
+\subsubsection{Logit模型 和朴素贝叶斯模型的比较}
+\paragraph{朴素贝叶斯模型}
+
+朴素贝叶斯模型是根据贝叶斯原理（{\href{https://ywt26.github.io/MicroecoAssign/Microeco_hw1_WeitongYao.pdf}{Assignment 1: Brief Introduction of Bayesian Estimation}），通过条件独立假设简化估计参数的模型（在某个条件下另一个变量贡献的信息失效）。
+朴素贝叶斯模型和Logit模型区别在于：
+\begin{enumerate}
+\item{估计的量不同：朴素贝叶斯模型估计的时P(X)和P(Y|X)的分布，Logit模型估计的是P(Y|X)。}
+\item{当GNB(Guass Naive Bayes)成立时，logit和NB收敛结果相似；GNB不成立，但数据量更大时logit精确度更大。}
+\item {Biase-Variance Tradeoff方面，NB的方差更小但偏差更大，因此在小数据样本NB的精确度更大。}
+\item {NB需要基于严格的条件独立假设，并非所有数据都适用；而且需要先验概率假设，具有很强的主观性。}
+\end{enumerate}
+\subsubsection{Logit模型和Probit模型的比较}
+\begin{enumerate}
+\item {从形式上的区别在于干扰项的分布，logit为独立同分布的Gumble：
+$\mu$是Gumbel 分布的众数，$\frac{\pi^2}{6}$$\beta^2$是Gumbel的方差，Gumbel 分布的 PDF
+\begin{equation} 
+f(x;\mu,\beta)= e^{-z-e^{-z}},where z = \frac{x-\mu}{\beta}
+\end{equation}
+Gumbel 分布的 CDF
+\begin{equation} 
+F(x;\mu,\beta)= e^{-e^{-(x-\beta)/\beta}}
+\end{equation}
+，probit为标准正态分布，因此probit不受独立同分布的限制，也不存在IIA效应问题，可以解决变量的相关性和个体随机偏好差异；同样地可以构建混合嵌套Logit模型(mixed nested logit model)达到同样的效果。}
+\item {Lecture里总结binary choice两者相同，multinomial时probit的协方差的参数比较多，运算量比较大；另外不合理的模型设定让probit的识别性和显著性明显降低。}
+\end{enumerate}
+
+%3 学习回顾与总结（参考TA Session）    
+\section{学习回顾与总结（参考TA Session）}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.1\textwidth]{2.png}
+\end{figure}
+
+
+\section{参考文献}
+[1]《高级计量经济学及Stata应用》第二版，陈强编著.
+
+[2]《分类数据分析》,（美）阿格莱斯蒂著.
+
+[3]《统计学习方法》,李航著.
+
+[4]\textit{离散选择模型研究进展}.王灿,王德,朱玮,宋姗.地理科学进展, 34 (10): 1275- 1287.
+
+[5] 离散选择模型的基本原理及其发展演讲评价.聂冲,贾生华.浙江大学管理学院.数量经济技术经济研究：2005年第11期.
+
+[6] \emph{Nested Logit Model},Asif Khan. IRE, Georg-August University Goettingen.
+
+[7]\emph{Discrete Choice Analysis Theory and Application to Travel Demand}. Moshe Ben-Akiva, Steven R. Lerman.
+
+[8]\emph{Generative and Discriminative Classifiers: Naive Bayse and Logistic Regression}.Chapter3. Mitchell.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
