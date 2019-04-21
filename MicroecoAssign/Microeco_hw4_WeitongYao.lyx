@@ -1,0 +1,699 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{CJK}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\pdf_title "Teaching Effectiveness Summary"
+\pdf_author "Jiaming Mao"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.2in
+\rightmargin 1.2in
+\bottommargin 1.25in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation 0in
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{CJK}{UTF8}{gbsn}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+The Factors Impacting the American Intergenerational Stratum Mobility
+\end_layout
+
+\begin_layout Author
+Yao Weitong
+\end_layout
+
+\begin_layout Standard
+The idea of this topic comes from 
+\shape italic
+Race and Economic Opportunity in the United States: An Intergenerational
+ Perspective
+\shape default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+literal "false"
+
+\end_inset
+
+, written by Raj Chetty, Nathaniel Hendren, Maggie R.
+ Jones, Sonya R.
+ PorterIs, Harvard University.
+ The research has been published on New York Times and it ephasized how
+ difference of the stratum mobility between black males and white males.
+ They found the intergenerational persistence of disparities varies substantiall
+y across racial groups and black Americans have substantially lower rates
+ of upward mobility and higher rates of downward mobility than whites.
+ In this assignment, I use GSS data to study the factors impacting the American
+ intergenerational stratum mobility, considering all responders of the interview
+ as a whole sample instead of focusing their sexes and colors.
+\end_layout
+
+\begin_layout Section
+Review of Ridge, Lasso and Elastic Net
+\end_layout
+
+\begin_layout Paragraph*
+Ridge Regression
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+J(𝜃)=\frac{1}{n}\sum_{i=1}^{n}(Y_{i}-BX_{i})^{2}+𝜆||B||^{2}=MSE(𝜃)+𝜆\sum_{i=1}^{m}𝜃_{i}^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula ${\displaystyle \sum_{i=1}}\text{𝜃}_{i}^{2}$
+\end_inset
+
+ is called L2 regularizer.
+ In R, we can use the package 
+\shape italic
+ridge 
+\shape default
+and method 
+\shape italic
+linearRidge(.).
+\end_layout
+
+\begin_layout Paragraph*
+Lasso Regression
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+J(𝜃)=\frac{1}{n}\sum_{i=1}^{n}(Y_{i}-BX_{i})^{2}+𝜆||B||^{2}=MSE(𝜃)+𝜆\sum_{i=1}^{m}|𝜃_{i}|
+\]
+
+\end_inset
+
+
+\begin_inset Formula ${\displaystyle \sum_{i=1}}|\text{𝜃}_{i}|$
+\end_inset
+
+ is called L1 regularizer.
+ In R, we can use the package 
+\shape italic
+glmnet 
+\shape default
+and method 
+\shape italic
+glmnet(.) 
+\shape default
+for Lasso and Elastic Net.
+\end_layout
+
+\begin_layout Paragraph*
+Elastic Net
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+J(\theta)=\frac{1}{n}\sum_{i=1}^{n}(Y_{i}-BX_{i})^{2}+\lambda||B||^{2}=MSE(\theta)+\lambda\sum_{i=1}^{m}𝛺(𝜃)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $𝛺(\text{𝜃})=𝛼𝐿_{1}+(1-\text{𝛼})\text{𝐿}_{2}$
+\end_inset
+
+ is the combination of L1 and L2 regularizer.
+\end_layout
+
+\begin_layout Standard
+These three regression estimates are not scale equivariant so X needs to
+ be standardized first.
+ The processs chooses the optimal 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is the process of model selection.
+ Differences are intuitionistic, different regularizers, for Ridge, the
+ L2 regularizer allows the shrinkage of all coefficients but not elimination;
+ for Lasso, it allows some of coefficients towards zero but sometimes it
+ will drop the coefficients randomly; for Elastic Net, it has combined the
+ advantages of first two.
+\end_layout
+
+\begin_layout Section
+Data Preprocessing and Variable Selections
+\end_layout
+
+\begin_layout Standard
+SEI is the abbreviation for Socioeconomic Index, reflecting the education,
+ income, and prestige associated with different occupations
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-4"
+literal "false"
+
+\end_inset
+
+.
+ This paper has defined the intergenerational stratum mobility as the gap
+ between the responder's SEI and weighted average of parent's SEIs.
+ If the gap is greater than 30, it indicates an upward mobility (defined
+ as Y = 1); the downward stratum mobility occurs if the gap is smaller than
+ -20 (defined as Y = -1), and if the stratum doesn't change, it's defined
+ as Y = 0.
+\end_layout
+
+\begin_layout Standard
+According to the previous study, Rothstein and Wozny (2012) found parental
+ income mattered in stratum mobility when it came to racial disparity.
+ Also, the environmental factors are important, for example, education (Dobbie
+ & Fryer, 2011), sextual and racial discriminations (Bertrand & Mullainathan,
+ 2004), the crime rate of the born place and the neighborhoods (Smith,2005).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 1.png
+	scale 50
+	rotateOrigin leftBaseline
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 2.png
+	scale 50
+	rotateOrigin leftTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Based on the available GSS data, this paper chooses 60 related variables
+ collected from 2000 to 2018, including four variables for dependent variables
+ calculation and adding some variables reflecting personal quality.
+ These variables can be divided into 11 categories: personal information,
+ education
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+literal "false"
+
+\end_inset
+
+, parents' educations, parental income, family, environments, born place
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-3"
+literal "false"
+
+\end_inset
+
+, job, social relations, individual quality and religion.
+ Most of these variables are dummy except for some income variables.
+ Here are some statistical outcomes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 4.png
+	scale 55
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 5.png
+	scale 80
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Model Selection and Elastic Net
+\end_layout
+
+\begin_layout Subsection
+Elastic Net Regression using Cross Validation
+\end_layout
+
+\begin_layout Standard
+One problem of using glmnet(.) for Lasso regression and Elastic Net regression
+ is that it can't handle data with missing values.
+ The first step is to eliminate the variables which have most missing values
+ and least explanations to the dependent variables gap.
+ Then using mean or mode(it depends on the nature of variables) of each
+ id for each variable to fill the missing values, the data set with more
+ than 30,000 records shrinks to 9591 records because of the serious missing
+ values of SEI (dependent variables).
+ All data preprocessing is done by Stata and regression is done by R.
+\end_layout
+
+\begin_layout Standard
+Here are the results using Lasso regression:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename R1.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename Rplot01.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename Rplot11.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename R0.png
+	scale 83
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Lasso regression, the data sets are seperated into training data(4795
+ obs.) and test data(4796 obs.).
+ Using training data and cross-validation to minimize L1 error, glmnet can
+ produce the optimal 
+\begin_inset Formula $\lambda=0.004433$
+\end_inset
+
+ and shrink some variables towards zero.
+ The optimal 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ should be calculated by cross-validation because Lasso needs a stable hyperpara
+meter (the X used to produce optimal 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ should not be highly correlated! ).Then, use the testing data set to predict
+ and evaluate this model：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename R00.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If using KNN (K-Nearest Neighbour) to test the model on test data set, the
+ result is as follows.
+ The optimal 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ does lead to a minimum error = 0.286.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename Rplot2.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Explanation of Results
+\end_layout
+
+\begin_layout Standard
+Although the parameters predict Y=1 and Y=-1 are not all the same (treat
+ Y = 0 as the reference level), the opposite sign of same coefficients do
+ make sense.
+ Take the probability of upward stratum mobility as an example, the economically
+ significant parameters(e-02) are wrkgovt (=1:work for govt; =2: private),
+ degree(0:lt high school - 4:graduate), padeg(dad's degree, same as label
+ degree), madeg(mom's degree, same as label degree), spdeg(spouse's degree,
+ same as label degree), income(total family income,;1-12, the larger the
+ label is, the higher the income is), rincome, finrela, getahead and racdif1(dif
+ference due to discrimination; =1: yes, =2: no).
+ All the coefficients appear to common sense but be slightly different from
+ the results derived by Raj Chetty, Nathaniel Hendren, Maggie R.
+ Jones, Sonya R.
+ PorterIs, who foucus on racial perspectives and keep others constant.
+ Instead of focusing on races, this paper takes all responders as entire
+ sample and concludes that the generation stratum mobility depends on the
+ degrees of two generations, and the parental income is quite significant.
+ These two factors are also applied to compute SEI.
+ The frictions derived from racial and sexual discrimination also impact
+ the mobility at a statistically significant level.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+
+\shape italic
+Race and Economic Opportunity in the United States: An Intergenerational
+ Perspective.
+ 
+\shape default
+Raj Chetty, Nathaniel Hendren, Maggie R.
+ Jones, Sonya R.
+ PorterIs.
+ Harvard University.
+ March 2018.
+\end_layout
+
+\begin_layout Bibliography
+\noindent
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-2"
+
+\end_inset
+
+
+\shape italic
+Educational Progress For African Americans And Latinos In The United States
+ From The 1950s To The 1990s: The Interaction Of Ancestry And Class.
+ 
+\shape default
+Michael Hout.
+ University of California, Berkeley.
+ June 1999.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-3"
+
+\end_inset
+
+
+\shape italic
+The Opportunity Atlas: Mapping the Childhood Roots of Social Mobility.
+
+\shape default
+ Raj Chetty, John Friedman, Nathaniel Hendren, Maggie R.
+ Jones, Sonya R.
+ Porter.
+ Working Paper.
+ October 2018.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-4"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Occupational prestige, WIKIPEDIA"
+target "https://en.wikipedia.org/wiki/Occupational_prestige"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{CJK}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
