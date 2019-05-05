@@ -1,0 +1,242 @@
+%!TEX program = xelatex
+\documentclass[cn]{elegantpaper}
+\usepackage{multirow}
+\usepackage{float}
+
+\title{决策树和集成方法学习笔记\\ \emph{Decision Trees and Ensemble Methods}}
+\version{1.0.0}
+\author{姚炜彤}
+
+
+
+\begin{document}
+
+\maketitle
+
+\songti Decision Trees and Ensemble Methods 介绍了Regression, Classification两类决策树和决策树的构建，并详细介绍了Bagging, Random Forest (RF), Boosting (L2 Boosting and Adaboosting)三种集成学习的方法。本文主要对Lecture的内容做学习回顾和总结，在此基础上补充pruning的两种方法，ID3、C4.5、OC1（多变量决策树）三类决策树算法和Boosting里的梯度提升算法。\href{https://ywt26.github.io/blog/2019/05/05/Microeco5}{ Github Page：决策树和集成方法学习笔记}
+
+%一  学习回顾与总结
+\section{学习回顾与总结}
+
+    \begin{table}[h]
+		\centering
+		\begin{tabular}{|l|}
+			\hline
+			\textbf{Framework}\\
+			\hline
+			\textbf{Ⅰ. Regression Tree and Classification tree}\\
+			\textbf{Ⅱ. Build a tree:}\\
+			\quad\textbf{1. 特征选择：}（Node purity measure）Gini index, misclassification rate, cross-entropy\\
+            \quad\textbf{2. 剪枝处理：}预剪枝和后剪枝\\
+            \quad\textbf{3. 算法：}ID3, C4.5, CART, OC1（多变量决策树）\\
+            \textbf{Ⅲ. Ensemble method:某种策略结合individual learner(base learner)}\\
+            \quad\textbf{1. Bagging:} bootstrap sampling，降低方差\\
+            \quad\textbf{2. Random Forest:} 在每个node随机选择一个包含m个属性的子集，再选择最优属性进行划分。\\
+            \quad\textbf{3. Boosting:}\\
+            \quad\quad weak→strong，by reweighting training data\\
+            \quad\quad Weighted sum of individual classifier\\
+            \quad\quad Loss function: (1) Adaboosting: exponential loss\quad
+                                      (2) L2 boosting: L2 loss\quad
+                                      (3) Gradient boosing\\
+            \quad\textbf{4. 结合策略：}simple average, weighted average, majority voting, plurality voting\\
+            \hline		
+		\end{tabular}
+		\caption{ \emph{from Decision Trees and Ensemble Methods, by Jiaming Mao}}
+		\label{tab:Margin_settings}
+	\end{table}
+
+
+%二 学习补充——pruning
+\section{学习回顾：剪枝Pruning}
+决策树的生成过程只考虑了局部的模型，因此容易造成过拟合（想象一下为了精确分类每个leaf下只有1-2个样本的情况）。Pruning是在决策树学习中对internal node进行简化，使之成为新的terminal node，达到减少模型的复杂程度、防止过拟合的目的。Pruning的判断依据是让整体的代价函数最小化，即每次pruning都必须重新计算，并比较before pruning和after pruning的整体代价函数，如果有$C_{\alpha}\left(T_{A}\right) \leqslant C_{\alpha}\left(T_{B}\right)$，则进行剪枝。
+
+预剪枝Prepruning是在树生成过程中对Node事先进行估计，判断是否进行prune，判断结果直接决定决策树的生成。后剪枝Postpruning则是先生成决策树，再由internal node开始自下而上，从后往前进行推断判断每个Node是否剪枝，根据判断结果对原先的决策树internal node进行替换。区别：postpruning在模型generalization上有比较优势，但是由于需要事先生成决策树，训练时间比prepruning更长。
+
+%三 ID3 C4.5 OC1算法的介绍与比较
+\section{学习补充：算法介绍与比较}
+\subsection{ID3和C45算法}
+ID3算法的本质是CLS的衍生，原理是在决策树的各个Node上计算各个特征的信息增益（或者信息增益率），通过最大信息增益选择特征构造下一层的Node,如此往复构造，但有两种特例：（1）piecewise constant决策树下的样本同属一个类别，直接返回T；（2）特征A为空值，视为单节点树，直接返回T。最大的信息增益本质上等用于Lecture里面最小的cross-entropy(符号相反)，数据Rm的cross entropy和在特征A下的cross-entropy分别为：
+\begin{equation}
+Q_{m}=-\sum_{j=1}^{j} \widehat{p}_{j}^{m} \log \widehat{p}_{j}^{m} \quad \quad
+Q(m|A)=\sum_{i=1}^{n}\frac{\left|R_{i}\right|}{|D|}Q_{m_{i}}
+\end{equation}
+信息增益和信息增益率为：
+\begin{equation}
+q(D,A) = Q_{m}-Q(m|A) \quad\quad q_{R}(D,A) = \frac{q(D,A)}{Q_{m}}
+\end{equation}
+
+ID3算法通过判断信息增益$q(D,A)$最大值选择特征，C4.5是ID3的改进：通过最大化信息增益率$q_{R}(D,A)$。C4.5的优势体现在：（1）如果同一个特征下的样本比较多，则信息增益会受样本数增大，缺乏公允性。（2）C4.5可以处理离散值也可以处理连续值。（3）可以在样本的某个特征缺失值时仍对样本进行分类——如果用ID3只能得到缺失属性的样本分布，但C4.5可以判断最终的类别：
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{1.png}
+	 \bigbreak
+	\includegraphics[width=.66\textwidth]{2.png}
+	\caption{ \emph{括号内为ID3得到的权重}}
+	\bigbreak
+	\includegraphics[width=.66\textwidth]{3.png}
+\end{figure}
+给每个terminal node加个权重（该类别样本数/同特征下其他类别总样本数），对6号缺失Outlook属性的样本进行判断：已知如果是sunny，humidity=90>75，play概率有0.4；overcast下play概率为1；rain下play的概率为0.4，play的总概率为：3.4+2.4+3.2=9 \quad $\frac{0.4}{3.4} \times \frac{3.4}{9}+1 \times \frac{3.2}{9}+\frac{0.4}{24} \times \frac{2.4}{9}=0.44<0.5$，所以6号样本分类错误。
+
+\subsection{ID3，C4.5，CART算法比较}
+ID3和C4.5的比较在上小节已经提到，两者的不足体现在:
+
+\noindent（1）局部进行最优化，容易导致全局过拟合。
+
+\noindent（2）C4.5采用Pessimistic Error Pruning (PEP)的剪枝策略：误判率$p=\frac{\sum_{i=1}^{L} E_{i}+0.5 L}{\sum_{i=1}^{L} N_{i}}$，其中N为leaf的样本数，其中有E个判断错误，0.5为惩罚因子。如果Prune前子树样本服从Binomial(N,P)，则$E(T_{B})=N * p$\quad$std(T_{B})=\sqrt{N * p *(1-p)}$；Prune后的terminal node服从Bernulli，$E(T_{A})=N *e，where e = \frac{E+o.5}{N}$，如果$E(T_{A})<E(T_{B})+std(T_{B})$成立则进行prune。该策略是自上而下的，容易造成“过剪枝”导致模型不能泛化（类似prepruning的缺点）。
+
+\noindent（3）C4.5采用信息增益率，惩罚参数为以特征A为条件的信息熵的倒数$\frac{1}{Q(m|A)}$，因此会倾向于选择惩罚参数较小的特征。
+\bigbreak
+
+相比之下，如Lecture所示CART算法的优点体现在：
+
+\noindent（1）CART采用代价复杂剪枝法$\sum_{m=1}^{|T|} \sum_{x_{i} \in R_{m}}\left(y_{i}-\overline{y}_{m}\right)^{2}+\alpha|T|$，其中$\alpha$权衡了拟合程度和模型的复杂程度从下往上判断剪枝，避免了过拟合。
+
+\noindent（2）采用的Gini Index作为特征判断，尤其CART为二叉树时 $\mathrm {Gini(P)}=2 \mathrm{p}(1-\mathrm{p})$，可以优化信息增益率的误差。
+
+\noindent（3）CART采用二叉树：特征$\lbrace A1,A2,A3\rbrace$会被先分类为$\lbrace A1,A2\rbrace$和$\lbrace A3\rbrace$，在$\lbrace A1,A2\rbrace$子树上再分类$\lbrace A1\rbrace$，$\lbrace A2\rbrace$，与C4.5的多类别相比，CART的同一个特征可以参与多次node的建立。
+
+\subsection{多变量特征决策树与OC1算法}
+三个算法下决策树的分类边界具有轴平行的特点（如下图），即每次分类只能用一个特征值，无法多个特征值共同使用
+
+\bigbreak
+\begin{figure}[H]
+    \centering
+	\includegraphics[width=.7\textwidth]{4.png}
+\end{figure}
+
+对于多变量特征决策树是对特征进行选择后，进行线性组合。在每个node上，我们希望其特征的个数最小化但是效果最优化，根据Carla E. Brodley和Paul E. Utgoff的\href{https://link.springer.com/article/10.1023/A:1022607123649}{Multivariate Decision Trees（1995）}，有以下3种方法可以进行特征选择：
+
+\bigbreak
+\noindent（1）\textbf{Sequential Backward Elimination}
+
+SBE是一个自上而下的特征搜索，它从所有特征开始，搜索迭代地删除对测试质量贡献最小的特性。SBE涉及局部最优和停止准则，局部价值准则和cross-entropy，Gini Index相关，停止准则决定何时停止从线性组合测试中消除特征：如果基于${i -1}$特性的测试的部分价值标准小于基于$i$特性的测试的部分价值标准，则删除第$i$个特征，直到只保留一个特性，或者停止搜索。
+
+\bigbreak
+\noindent（2）\textbf{Sequential Forward Selection}
+
+SFS一种自下而上的搜索方法，它从零特征开始，并试图添加一些特征，这些特征将导致部分价值准则的最大幅度增长。与SBE算法一样，SFS算法也需要一个局部最优准则和一个停止准则。
+
+\bigbreak
+\noindent（3）\textbf{Heuristic Sequential Search}
+HSS是前两个的结合：给出一组训练实例，HSS首先找到一个基于所有特征的线性组合检验和一个基于一个特征的最佳线性检验。在基于局部最优准则下，如果一个特征的结果更好，执行SFS；反之，执行SBE。
+
+\bigbreak
+\noindent（4）\textbf{CART's linear combination}
+
+CART的线性组合算法被称为“Trading quality for simplicity”，它的简化包括：只使用数值特征，只使用完整实例，可以选择较少特征的线性组合测试（但是牺牲了精确度）。CART先执行一个SBE得到一个最小化误判的函数，再对每个特征消除的结果进行计算：如果每删除一个特征，（导致node的误判增加）每次都必须计算阈值C（maximum increase in error）$error_{elimination}< \beta * C $成立则确认删除该特征，继续搜索。每次搜索时都保持之前的线性组合系数不变，直到最后停止搜索才重新计算系数。
+
+(在Carla E. Brodley和Paul E. Utgoff的研究里发现multivariate DT比univariate DT的错误更少，而且HSS是一个较优的特征选择策略)
+
+\begin{figure}[H]
+    \centering
+	\includegraphics[width=.4\textwidth]{6.png}
+	\caption{ \emph{特征的线性组合结果是形成不平行于坐标轴的边界}}
+\end{figure}
+
+多变量决策树的算法主要是Murthy等人提出的\href{https://www.aaai.org/Papers/AAAI/1993/AAAI93-049.pdf}{OC1算法}：OC1算法先寻找每个属性的最优权重，在局部优化后，在分类边界加入随机干扰来寻找更好的边界。该篇学习笔记简要介绍一下Murthy用的扰动算法（Perturbation Algorithm）：
+
+\bigbreak
+\noindent（1）决策树中每个节点的初始超平面（多个特征的线性组合平面）由OCl随机选择，而且如果两个超平面拥有同样的点集，OC1是无法区分的，由此提供扰动的思路。优化的思路是：由将当前超平面旋转到新位置，而且每次只能改变该超平面的一个维度（即一个特征值，此时又回到axis-parallel的局部最优化问题）。
+
+\bigbreak
+\noindent（2）假设样本空间P包含n个例子，每个例子都有d个属性。当前的超平面$H$可以被定义为：
+$\sum_{i=1}^{d}\left(a_{i} X_{i}\right)+a_{d+1}=0$。
+在样本空间P里取第$j$个样本$P_{j}=\left(x_{j 1}, x_{j 2}, \ldots, x_{j d}\right)$，代入初始超平面可得：$\sum_{i=1}^{d}\left(a_{i} x_{j i}\right)+a_{d+1}=V_{j}$，其中$V_{j}$的符号代表了点$P_{j}$在超平面的上方还是下方，如果该超平面是没有误判的，则该平面同一侧的所有样本的符合$V_{k}$应当是相同的。
+
+\bigbreak
+\noindent（3）定义$U_{j}=\frac{a_{m} x_{j m}-V_{j}}{x_{j m}}, \quad j=1,2,...,n$，如果$a_{m}>U_{j}$则有$P_{j}$在超平面的上方，反之在下方。保持其他d个特征值$a_{1},...,a_{d+1}$不变，重复n个样本可以得到关于$a_{m}$的n个约束条件，由此超平面的拟合简化成为找到一个$a_{m}$让其尽可能满足多个约束条件的一维问题。
+
+\bigbreak
+\begin{figure}[H]
+    \centering
+	\includegraphics[width=.5\textwidth]{7.png}
+	\caption{ \emph{扰动算法.from ``OC1: A Randomized Induction of Oblique Decision Trees''}}
+\end{figure}
+
+%四 梯度提升
+\section{梯度提升Gradient Boosting}
+根据代价函数的特殊性，可以区分出$L_{2}$Boosting( Loss function为$L_{2}$)和Adaboostings(Loss function为指数函数$L(y, f(x))=\exp [-y \sum_{m=1}^{M} \alpha_{m} G_{m}(x)]$)。但对于一般的代价函数，采用\textbf{梯度提升回归算法}：把代价函数的负梯度$-\left[\frac{\partial L\left(y, f\left(x_{i}\right)\right)}{\partial f\left(x_{i}\right)}\right]_{f(x)=f_{m-1}(x)}$近似看成残差进行拟合，
+
+再根据新的$R_{mj}$计算$c_{m j}=\arg \min _{c} \sum_{x_{i} \in R_{m}} L\left(y_{i}, f_{m-1}\left(x_{i}\right)+c\right)$，
+
+更新$f_{m}(x)=f_{m-1}(x)+\sum_{j=1}^{J} c_{m j} I\left(x \in R_{m j}\right)$，
+
+最后得到strong learner $f(x)=f_{T}(x)=f_{0}(x)+\sum_{t=1}^{T} \sum_{j=1}^{J} c_{t j}, I\left(x \in R_{t j}\right)$。
+
+
+\textbf{梯度提升分类算法}则把代价函数写成对数似然函数$L(y, f(x))=\log (1+\exp (-y f(x)))$，再重复以上步骤。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{参考文献}
+[1]《统计学习方法》,李航著.
+
+[2]《机器学习》,周志华著.
+
+[3] \href{https://link.springer.com/article/10.1007/BF00116251}{\emph{Quinlan, J. R. (1986). Induction of decision trees. Machine Learning}, 1(1):81-106}
+
+[4] \href{https://pdfs.semanticscholar.org/bfd1/d49de1797a063ef855fd96a5bae08e471879.pdf}{Grzymala-Busse, Jerzy W. (February 1993). \emph{"Selected Algorithms of Machine Learning from Examples" }(PDF). Fundamenta Informaticae. 18(2): 193–207 – via ResearchGate.}
+
+[5] \href{https://link.springer.com/article/10.1007/BF00993309}{\emph{C4.5: Programs for Machine Learning}, by J. Ross Quinlan. Morgan Kaufmann Publishers, Inc., 1993}
+
+[6] \href{https://www.cnblogs.com/huangyc/p/9768858.html#_label1_1}{\emph{《决策树（Decision Tree）-ID3、C4.5、CART比较》}}
+
+[7] \href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.55.7328&rep=rep1&type=pdf}{\emph{Multivariate Decision Trees,}CARLA E. BRODLEY, PAUL E. UTGOFF.Machine Learning, 19, 45-77 (1995) }
+
+[8] \href{https://www.aaai.org/Papers/AAAI/1993/AAAI93-049.pdf}{\emph{OC1:Randomized Induction of Oblique Decision Trees}, Sreerama Murthy, Simon Kasif, Steven Salzberg, Richard Beigel }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
