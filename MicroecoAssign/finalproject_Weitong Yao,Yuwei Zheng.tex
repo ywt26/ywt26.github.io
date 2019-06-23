@@ -1,0 +1,378 @@
+%!TEX program = pdflatex
+
+\documentclass{elegantpaper}
+\captionsetup{belowskip=-10pt}
+
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{subfigure}
+
+
+\title{Doubly Robust Estimation and Causal Inference Model}
+\author{Weitong Yao\quad Yuwei Zheng}
+\date{\small\itshape Version: 0.01 \\ Last update: \today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	Doubly robust estimation (DR) is a combination of outcome regression (OR) and inverse propensity weighted score model (IPW). If one of these models is correctly specified, the ATE of doubly robust is the unbiased, consistent estimator of average treatment effect estimator under the assumption of no unmeasured confounders. This paper provides a conceptual overview of IPW and DR, compares different MSE and ATE from simulations under different circumstances, and discusses the possible improvements and limitations of DR. 
+\end{abstract}
+
+
+%--------------------------
+%    1. Introduction
+%--------------------------
+\section{Introduction}
+
+Doubly Robust is a robust protected model to study causal inferences. The term doubly robustness is constructed based on the Augmented Inverse Probability Weighted Estimators (AIPW), proposed by Robins, Rotnitzky and Zhao (1994). They provided a method to study regression coefficients with missing regressors, which improves the efficiency of estimation. This algorithm is further extended and issues about this methodology are studied by many researchers (Robins, J. M., Van der Laan, M. J., Brookhart, M. A., etc.).
+
+In the introduction, we mainly review some related concepts and algorithms for DR estimations. This article is organized as follows: in Section 2, we begin to compare different models, including pure linear model, IPW, traditional DR, constrained weighting ensemble models, and unconstrained weighting ensemble models. In Section 3, we obtain conclusions and results from our simulation studies. The discussion of DR is illustrated in Section 4.
+
+\subsection*{Conceptual Review}
+
+We define $X = 1$ if it's treated and $X = 0$ if it's under control, Y as observed outcome and Z as observed, measurable confounders, and the full dataset is $(Y_i, X_i, Z_i)\quad i = 1,...,n $ for individuals. What we are interested in is to find the average treatment effect\quad  $\tau = E(Y|X=1,Z) - E(Y|X=0,Z)$. It is a counterfactual issue because we can't see all potential outcomes $(Y_1,Y_0)$ for all individuals, instead we can only observe $Y = Y_1X+Y_0(1-X)$, which is critical.
+
+Regression is one approach to estimate $\tau$, and it requires the postulated regression model is true and identical and no unmeasurable confounders. In this situation, the ATE of outcome regression is calculated  as follows, that's the marginal effect of treatment (maximum likelihood estimate)is exactly the ATE for regression method.
+\begin{equation}
+\begin{split}
+E(Y|X, Z) =&  \beta_0 + \beta_x X + \beta_z Z\\
+\tau_{reg} =& E(Y|X=1, Z) - E(Y|X=0, Z)\\
+=& (\hat{\beta_0} + \hat{\beta_x} \times 1 + \hat{\beta_z} Z)-
+(\hat{\beta_0} + \hat{\beta_x} \times 0 + \hat{\beta_z} Z)\\
+=& \hat{\beta_x}
+\end{split}
+\end{equation}
+
+
+Another way to estimate $\tau$ is inverse propensity weighted score model(IPW), the reason for “inverse propensity” is to provide even weighting for treatment group and control group:
+\begin{equation}
+\tau_{ ipw} =\frac{1}{n} \sum_{i=1}^{n} \big[\frac{X_{i} Y_{i}}{P(X=1 | Z)}-\frac{\left(1-X_{i}\right) Y_{i}}{1-P(X=1 | Z)}\big]
+\end{equation}
+
+Under assumptions that at least one of two models is correctly specified and no unmeasurable confounders, the ATE of doubly robust is defined as follows, and it's obviously a linear combination of outcome regression and inverse propensity weighted model with weighs equal $\frac{P(X | Z)-X_{i}}{P(X | Z)}$ and 1 respectively.
+
+\begin{equation}
+\begin{split}
+\tau_{D R}=&\frac{1}{n} \sum_{i=1}^{n} \big[ \frac{P(X=1 | Z)-X_{i}}{P(X=1 | Z)}\widehat{Y_1}+\frac{X_{i} Y_{i}}{P(X=1 | Z)}\big] - \\
+&{\frac{1}{n} \sum_{i=1}^{n} \big[ \frac{(1-P(X=1 | Z))-(1-X_{i})}{1-P(X=1 | Z)}\widehat{Y_0}+\frac{\left(1-X_{i}\right) Y_{i}}{1-P(X=1 | Z)}}\big]\\
+=&\tau_{1,D R} - \tau_{0,D R}
+\end{split}
+\end{equation}
+\begin{equation}
+\begin{split}
+where,\ \ \tau_{1,D R} =&
+E(Y_1) + E\big[ \frac{P(X=1 | Z)-X_{i}}{P(X=1 | Z)}(\widehat{Y_1}-Y_1)\big]\\
+and,\ \ \tau_{0,D R} =& E(Y_0) + E\big[ \frac{X_{i}-P(X=1 | Z)}{1-P(X=1 | Z)}\widehat{Y_0}\big]
+\end{split}
+\end{equation}
+
+\smallskip
+$\tau_{1,D R}$ is the function of observed outcome $Y_1$ and predicted outcome $\widehat{Y_1}$, $\tau_{0,D R}$ depends on $\widehat{Y_0}$ only as we can't observe $Y_0$, and  $P(X=1| Z)$ is derived from logistic regression. If the OR is true, $E(Y-\hat{Y})=0$; if IPW is true, we have $E(P(X=1 | Z)-X)=0$. In either scenario, ATE of DR is always $E(Y_1)-E(Y_0)$, which is an unbiased, consistent estimator for ATE.
+
+
+%----------------------------------------
+%    2.Stacking Models and Comparison
+%----------------------------------------
+\section{Stacking Models and Comparison}
+What if the weights are more flexible, will the stacking model of OR and IPW perform better than traditional doubly robust model? In this section, we apply more flexible weights with each model and compare its ATE to different traditional models with different simulations and number of observations. All simulations are conducted by using cross-validation with five folders.
+
+%---------- 2.1 Constrained Weighted ----------
+\subsection{Constrained Weighted Stacking Model}
+The advantage of constrained weighting is that it provides better interpretation. If the weight of OR is defined as $w_1$, the weight of IPW is $w_2 = 1 - w_1$. The logic to find optimal weighting is to minimize mean squared error. Details about simulation are:
+\begin{equation}
+\begin{split}
+Z \sim&N(0,2), \ X \sim binomial(1,sigmoid(Z)), \ Y = X + Z + \varepsilon \\
+OR =&Y \sim X+Z \quad\quad
+IPW= \frac{X_{i} Y_{i}}{P(X=1 | Z)} + \frac{\left(1-X_{i}\right) Y_{i}}{1-P(X=1 | Z)}\
+\end{split}
+\end{equation}
+
+And the Constrained Weighted Stacking Model is defined as:
+\begin{equation}
+\begin{split}
+Stack_{1} =&w_1 \times \widehat{Y_1} + w_2 \times \frac{X_{i} Y_{i}}{P(X=1 | Z)}\\
+Stack_{0} =&w_1 \times \widehat{Y_0} + w_2 \times \frac{\left(1-X_{i}\right) Y_{i}}{1-P(X=1 | Z)}\\
+&w_1 + w_2 = 1
+\end{split}
+\end{equation}
+
+The simulation contains three kinds of $P(X=1 | Z)$: gaussian, logit and probit. The mean optimal weight of OR under different number of observations and $P(X=1 | Z)$ is
+\bigskip
+
+\begin{table}[!htbp]
+  \small
+  \centering
+  \caption{Average Optimal Weight of OR}
+    \begin{tabular}{llll}
+    \toprule
+           & \multicolumn{1}{c}{Gaussian} & \multicolumn{1}{c}{Logit} & \multicolumn{1}{c}{Probit}\\
+    \midrule
+    n = 500 & \multicolumn{1}{c}{ 0.5443383} & \multicolumn{1}{c}{0.6085503} & \multicolumn{1}{c}{0.5982036}\\
+    n = 1000 & \multicolumn{1}{c}{0.7070444} & \multicolumn{1}{c}{ 0.8213404} & \multicolumn{1}{c}{ 0.8078634}\\
+    n = 2000 & \multicolumn{1}{c}{0.8346533} & \multicolumn{1}{c}{0.9117676} & \multicolumn{1}{c}{0.9143612}\\
+    n = 5000 & \multicolumn{1}{c}{0.9505096} & \multicolumn{1}{c}{0.951561} & \multicolumn{1}{c}{0.9718606}\\
+    \midrule
+    \end{tabular}%
+  \label{tab:reg}%
+\end{table}%
+
+The results make sense: (1) As the number of observations increase, the simulation is more convincible and the weight of OR increases largely, according with $Y = X + Z + \varepsilon $. (2) If the independent variable is binary, there is little difference between logit regression and probit regression. (3) The speed of convergence(the fitted model converged to OR) is faster under Logit and Probit, compared with Gaussian. 
+The vertical axis of graphs represent MSE for testing dataset. (4) Further discovery: the optimal weight of OR is larger than that of IPW until $\alpha >= 4$ in $Y = Z^\alpha + X + \varepsilon$, it seems OR is a better fitted model (however, the MSE is so large under $\alpha > 1$, which means the discovery may be unreasonable.)
+
+\begin{figure}[H]
+\setlength{\abovedisplayskip}{1pt}
+\setlength{\belowdisplayskip}{1pt}
+\subfigure[gaussian with n = 500]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{gaussian_500.png}
+\end{minipage}%
+}%
+\subfigure[gaussian with n = 1000]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{gaussian_1000.png}
+%\caption{fig2}
+\end{minipage}%
+}%
+\subfigure[gaussian with n = 2000]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{gaussian_2000.png}
+\end{minipage}
+}
+\end{figure}
+\begin{figure}[H]
+\subfigure[logit with n = 500]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{logit_500.png}
+\end{minipage}%
+}%
+\subfigure[logit with n = 1000]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{logit_1000.png}
+%\caption{fig2}
+\end{minipage}%
+}%
+\subfigure[logit with n = 2000]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{logit_2000.png}
+\end{minipage}
+}
+\subfigure[probit with n = 500]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{probit_500.png}
+\end{minipage}%
+}%
+\subfigure[probit with n = 1000]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{probit_1000.png}
+%\caption{fig2}
+\end{minipage}%
+}%
+\subfigure[probit with n = 2000]{
+\begin{minipage}[t]{0.36\linewidth}
+\includegraphics[width=2.5in]{probit_2000.png}
+\end{minipage}
+}
+\end{figure}
+\smallskip
+
+%---------- 2.2 Unconstrained Weighted ----------
+\subsection{Unconstrained Weighted Stacking Model}
+The unconstrained weighted stacking model may provide better fitted outcome at the cost of  better interpretation. Suppose $w_1, w_2$ are weights for OR and IPW respectively and keep the settings same as section 2.1. By using “brute traversal” weights between 0 and 1, we obtain 3D plots for each folder :
+\begin{figure}[H]
+\setlength{\abovecaptionskip}{0.cm}
+\setlength{\belowcaptionskip}{0.cm}
+\subfigure[1st training fold with n = 1000]{
+\begin{minipage}[t]{0.5\linewidth}
+\includegraphics[width=2.5in]{Rplot1.png}
+\end{minipage}%
+}%
+\subfigure[2nd training fold with n = 1000]{
+\begin{minipage}[t]{0.5\linewidth}
+\includegraphics[width=2.5in]{Rplot2.png}
+%\caption{fig2}
+\end{minipage}%
+}%
+\end{figure}
+\begin{figure}[H]
+\subfigure[3rd training fold with n = 1000]{
+\begin{minipage}[t]{0.5\linewidth}
+\includegraphics[width=2.5in]{Rplot3.png}
+\end{minipage}
+}%
+\subfigure[4th training fold with n = 1000]{
+\begin{minipage}[t]{0.5\linewidth}
+\includegraphics[width=2.5in]{Rplot4.png}
+\end{minipage}
+}
+\end{figure}
+The optimal weights are stable at around 0.91 and 0.05 with increasing n.
+\smallskip
+
+%---------- 2.3 Comparison ----------
+\subsection{Result Comparison}
+\subsubsection{Model Definition}
+We study and compare MSE, ATE and variance of outcome regression, IPW, Doubly Robust, OLS ensemble(lsen), constrained weighted stacking model(stack) and unconstrained weighted stacking model(Unstack). As defined earlier, 
+\begin{equation}
+\begin{split}
+f_{1}=&w_1 \times \widehat{Y_1}  + w_2 \times \frac{X_{i} Y_{i}}{P(X=1 | Z)}\\
+f_{0}=&w_1 \times \widehat{Y_0}  + w_2 \times \frac{\left(1-X_{i}\right) Y_{i}}{1-P(X=1 | Z)}\\
+\tau_{stack} &=  E(f_{1}) - E(f_{0}) \ \ \ \ with \ \ \ w_1 + w_2 = 1\\
+\tau_{Unstack} &=  E(f_{1}) - E(f_{0}) \ \ \ \ with \ \ \  w_1,w_2 \in [0,1]
+\end{split}
+\end{equation}
+
+The OLS ensemble model is obtain using the following procedure:
+\begin{itemize} 
+\item Using training data set in cv, regress $\widehat{Y_1}$ and $\frac{X_{i} Y_{i}}{P(X=1 | Z)}$ on Y | X=1(observed $Y_1$)
+
+then we get $Y_1 = \hat{\beta_1} \widehat{Y_1} + \hat{\beta_2} \frac{X_{i} Y_{i}}{P(X=1 | Z)}$
+
+\item Using training data set in cv, regress $\widehat{Y_0}$ and $\frac{\left(1-X_{i}\right) Y_{i}}{1-P(X=1 | Z)}$ on Y | X=0(observed $Y_0$)
+
+then we get $Y_0 = \hat{\beta_3} \widehat{Y_0} + \hat{\beta_4} \frac{\left(1-X_{i}\right) Y_{i}}{1-P(X=1 | Z)}$
+\item Apply two linear regression model on testing data and get $\mathcal{Y}_1$ and $\mathcal{Y}_0$
+\item $\tau_{lsen} = E(\mathcal{Y}_1) - E(\mathcal{Y}_0)$
+\end{itemize}  
+
+\subsubsection{Model Comparison}
+We compare the efficiency of six causal inference model by changing different initial settings and number of observations by spliting the dataset into 10 folders and applying cross-validation, the comparisons are shown in the following table.
+\bigskip
+
+% comparison with n = 500
+\begin{table}[H]
+  \small
+  \centering
+  \caption{Comparing Causal Inference Model with n = 500}
+    \begin{tabular}{llllllll}
+    \toprule
+    Settings & \multicolumn{1}{c}{Indicator} &\multicolumn{1}{c}{Reg} & \multicolumn{1}{c}{IPW} & \multicolumn{1}{c}{DR} & \multicolumn{1}{c}{LSEN} & \multicolumn{1}{c}{Stack} & \multicolumn{1}{c}{Unstack}\\
+   
+    \midrule
+    Y = linear(X) + linear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{0.951430} & \multicolumn{1}{c}{1.011689} & \multicolumn{1}{c}{1.009087} & \multicolumn{1}{c}{3.444393}& \multicolumn{1}{c}{1.017201} & \multicolumn{1}{c}{0.978468}\\
+    X = binomial(1,linear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{ 0.023993} & \multicolumn{1}{c}{1.112388} & \multicolumn{1}{c}{0.232103} & \multicolumn{1}{c}{0.033396}& \multicolumn{1}{c}{ 0.054101} & \multicolumn{1}{c}{0.058459}\\
+        & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{0.934337} & \multicolumn{1}{c}{85.261919} & \multicolumn{1}{c}{3.847946} & \multicolumn{1}{c}{6.811522}& \multicolumn{1}{c}{4.129348} & \multicolumn{1}{c}{3.402911}\\%%%%%%%%%%%
+  
+     \midrule              
+     Y = linear(X) + linear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{0.956788} & \multicolumn{1}{c}{1.189190} & \multicolumn{1}{c}{ 1.016797} & \multicolumn{1}{c}{ 1.340817}& \multicolumn{1}{c}{1.021133} & \multicolumn{1}{c}{ 0.918498}\\
+    X = binomial(1,nonlinear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.019725} & \multicolumn{1}{c}{0.148412} & \multicolumn{1}{c}{0.087840} & \multicolumn{1}{c}{0.042385}& \multicolumn{1}{c}{ 0.029081} & \multicolumn{1}{c}{0.026488}\\
+     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{1.053720} & \multicolumn{1}{c}{ 3.820766} & \multicolumn{1}{c}{0.466968} & \multicolumn{1}{c}{ 5.616494}& \multicolumn{1}{c}{3.008335} & \multicolumn{1}{c}{1.738237}\\%%%%%%%%%%%
+     
+    \midrule                
+    Y = linear(X) + nonlinear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.061157} & \multicolumn{1}{c}{-2.275825} & \multicolumn{1}{c}{-1.665877} & \multicolumn{1}{c}{ 1.583260}& \multicolumn{1}{c}{0.908970} & \multicolumn{1}{c}{0.796402}\\
+    X = binomial(1,linear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.177363} & \multicolumn{1}{c}{52.932163} & \multicolumn{1}{c}{27.393468} & \multicolumn{1}{c}{0.124896}& \multicolumn{1}{c}{0.374979} & \multicolumn{1}{c}{0.331102}\\
+                     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{39.34201} & \multicolumn{1}{c}{5026.19116} & \multicolumn{1}{c}{81.44477} & \multicolumn{1}{c}{60.19720}& \multicolumn{1}{c}{44.22266} & \multicolumn{1}{c}{37.23538}\\%%%%%%%%%%%
+    \midrule
+    Y = linear(X) + nonlinear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.210787} & \multicolumn{1}{c}{1.219049} & \multicolumn{1}{c}{1.184054} & \multicolumn{1}{c}{1.262922}& \multicolumn{1}{c}{1.227717} & \multicolumn{1}{c}{1.071796}\\
+    X = binomial(1,nonlinear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.009586} & \multicolumn{1}{c}{0.106280} & \multicolumn{1}{c}{0.105656} & \multicolumn{1}{c}{0.0164993}& \multicolumn{1}{c}{0.021225} & \multicolumn{1}{c}{0.027807}\\
+                     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{1.341292} & \multicolumn{1}{c}{3.283949} & \multicolumn{1}{c}{0.650278} & \multicolumn{1}{c}{1.682166}& \multicolumn{1}{c}{0.511069} & \multicolumn{1}{c}{0.466270}\\%%%%%%%%%%%
+    \midrule
+    \end{tabular}%
+  \label{tab:reg}%
+\end{table}%
+
+
+% comparison with n =1000
+\begin{table}[H]
+  \small
+  \centering
+  \caption{Comparing Causal Inference Model with n = 1000}
+    \begin{tabular}{llllllll}
+    \toprule
+    Settings & \multicolumn{1}{c}{Indicator} &\multicolumn{1}{c}{Reg} & \multicolumn{1}{c}{IPW} & \multicolumn{1}{c}{DR} & \multicolumn{1}{c}{LSEN} & \multicolumn{1}{c}{Stack} & \multicolumn{1}{c}{Unstack}\\
+   
+    \midrule
+    Y = linear(X) + linear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.007846} & \multicolumn{1}{c}{1.236580} & \multicolumn{1}{c}{0.952120} & \multicolumn{1}{c}{3.424797}& \multicolumn{1}{c}{1.073456} & \multicolumn{1}{c}{1.039096}\\
+    X = binomial(1,linear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.006284} & \multicolumn{1}{c}{0.184614} & \multicolumn{1}{c}{0.024730} & \multicolumn{1}{c}{0.017164}& \multicolumn{1}{c}{0.026608} & \multicolumn{1}{c}{0.022017}\\
+        & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{1.025680} & \multicolumn{1}{c}{40.461838} & \multicolumn{1}{c}{2.806959} & \multicolumn{1}{c}{6.732188}& \multicolumn{1}{c}{3.618579} & \multicolumn{1}{c}{3.227080}\\%%%%%%%%%%%
+     \midrule              
+     Y = linear(X) + linear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.004839} & \multicolumn{1}{c}{1.254511} & \multicolumn{1}{c}{0.995902} & \multicolumn{1}{c}{1.399795}& \multicolumn{1}{c}{1.089641} & \multicolumn{1}{c}{1.000316}\\
+    X = binomial(1,nonlinear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.004731} & \multicolumn{1}{c}{0.010886} & \multicolumn{1}{c}{0.016957} & \multicolumn{1}{c}{0.003589}& \multicolumn{1}{c}{ 0.006722} & \multicolumn{1}{c}{0.007132}\\
+     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{0.975406} & \multicolumn{1}{c}{ 4.700372} & \multicolumn{1}{c}{0.467718} & \multicolumn{1}{c}{ 5.184206}& \multicolumn{1}{c}{ 3.158589} & \multicolumn{1}{c}{2.020850}\\%%%%%%%%%%%
+    \midrule                
+    Y = linear(X) + nonlinear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.468347} & \multicolumn{1}{c}{ 2.108269} & \multicolumn{1}{c}{ 1.547489} & \multicolumn{1}{c}{ 1.587310}& \multicolumn{1}{c}{1.509558} & \multicolumn{1}{c}{1.364751}\\
+    X = binomial(1,linear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.072504} & \multicolumn{1}{c}{1.945301} & \multicolumn{1}{c}{1.245016} & \multicolumn{1}{c}{0.091852}& \multicolumn{1}{c}{0.303723} & \multicolumn{1}{c}{0.312551}\\
+                     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{33.50649} & \multicolumn{1}{c}{624.16712} & \multicolumn{1}{c}{219.46862} & \multicolumn{1}{c}{52.80868}& \multicolumn{1}{c}{47.38703} & \multicolumn{1}{c}{40.32269}\\%%%%%%%%%%%
+    \midrule
+    Y = linear(X) + nonlinear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.251615} & \multicolumn{1}{c}{1.194133} & \multicolumn{1}{c}{1.173154} & \multicolumn{1}{c}{1.289442}& \multicolumn{1}{c}{1.238894} & \multicolumn{1}{c}{1.098957}\\
+    X = binomial(1,nonlinear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.008945} & \multicolumn{1}{c}{0.013843} & \multicolumn{1}{c}{0.013961} & \multicolumn{1}{c}{0.004397}& \multicolumn{1}{c}{0.004731} & \multicolumn{1}{c}{0.005538}\\
+                     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{1.4309120} & \multicolumn{1}{c}{3.7667123} & \multicolumn{1}{c}{0.6473534} & \multicolumn{1}{c}{1.8486960}& \multicolumn{1}{c}{0.5469495} & \multicolumn{1}{c}{0.5199483}\\%%%%%%%%%%%
+    \midrule
+    \end{tabular}%
+  \label{tab:reg}%
+\end{table}%
+
+% comparison with n =2000
+\begin{table}[H]
+  \small
+  \centering
+  \caption{Comparing Causal Inference Model with n = 2000}
+    \begin{tabular}{llllllll}
+    \toprule
+    Settings & \multicolumn{1}{c}{Indicator} &\multicolumn{1}{c}{Reg} & \multicolumn{1}{c}{IPW} & \multicolumn{1}{c}{DR} & \multicolumn{1}{c}{LSEN} & \multicolumn{1}{c}{Stack} & \multicolumn{1}{c}{Unstack}\\
+   
+    \midrule
+    Y = linear(X) + linear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{0.995271} & \multicolumn{1}{c}{0.940532} & \multicolumn{1}{c}{0.930769} & \multicolumn{1}{c}{3.424313}& \multicolumn{1}{c}{1.034398} & \multicolumn{1}{c}{1.007690}\\
+    X = binomial(1,linear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.002309} & \multicolumn{1}{c}{1.156691} & \multicolumn{1}{c}{0.041513} & \multicolumn{1}{c}{0.006603}& \multicolumn{1}{c}{0.005387} & \multicolumn{1}{c}{0.005614}\\
+        & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{0.988404} & \multicolumn{1}{c}{358.591610} & \multicolumn{1}{c}{4.104773} & \multicolumn{1}{c}{ 7.000557}& \multicolumn{1}{c}{ 4.035834} & \multicolumn{1}{c}{3.637824}\\%%%%%%%%%%%%%%%
+     \midrule              
+     Y = linear(X) + linear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.009137} & \multicolumn{1}{c}{1.361061} & \multicolumn{1}{c}{1.060845} & \multicolumn{1}{c}{1.429234}& \multicolumn{1}{c}{1.107688} & \multicolumn{1}{c}{1.027161}\\
+    X = binomial(1,nonlinear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.003655} & \multicolumn{1}{c}{0.020703} & \multicolumn{1}{c}{0.005703} & \multicolumn{1}{c}{0.008695}& \multicolumn{1}{c}{0.006180} & \multicolumn{1}{c}{0.005427}\\
+     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{0.965065} & \multicolumn{1}{c}{ 5.280279} & \multicolumn{1}{c}{0.517221} & \multicolumn{1}{c}{5.552783}& \multicolumn{1}{c}{ 3.218770} & \multicolumn{1}{c}{2.166259}\\%%%%%%%%%%%%%%%
+    \midrule                
+    Y = linear(X) + nonlinear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.363651} & \multicolumn{1}{c}{-0.938856} & \multicolumn{1}{c}{-0.354882} & \multicolumn{1}{c}{ 1.600783}& \multicolumn{1}{c}{1.207503} & \multicolumn{1}{c}{1.109078}\\
+    X = binomial(1,linear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.071956} & \multicolumn{1}{c}{15.757928} & \multicolumn{1}{c}{10.003057} & \multicolumn{1}{c}{0.116070}& \multicolumn{1}{c}{ 0.068612} & \multicolumn{1}{c}{0.082408}\\
+                     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{31.64986} & \multicolumn{1}{c}{6225.74181} & \multicolumn{1}{c}{118.98011} & \multicolumn{1}{c}{52.89056}& \multicolumn{1}{c}{45.81513} & \multicolumn{1}{c}{41.19371 }\\%%%%%%%%%%%%%%%
+    \midrule
+    Y = linear(X) + nonlinear(Z) & \multicolumn{1}{c}{ATE} & \multicolumn{1}{c}{1.265785} & \multicolumn{1}{c}{1.275776} & \multicolumn{1}{c}{1.238021} & \multicolumn{1}{c}{1.318620}& \multicolumn{1}{c}{1.265688} & \multicolumn{1}{c}{1.120080}\\
+    X = binomial(1,nonlinear(Z)) & \multicolumn{1}{c}{VAR} & \multicolumn{1}{c}{0.004881} & \multicolumn{1}{c}{0.061766} & \multicolumn{1}{c}{ 0.057562} & \multicolumn{1}{c}{0.005951}& \multicolumn{1}{c}{0.011241} & \multicolumn{1}{c}{0.012562}\\
+                     & \multicolumn{1}{c}{MSE} & \multicolumn{1}{c}{ 1.414781} & \multicolumn{1}{c}{4.014497} & \multicolumn{1}{c}{0.679947} & \multicolumn{1}{c}{1.746575}& \multicolumn{1}{c}{0.565457} & \multicolumn{1}{c}{0.539640}\\%%%%%%%%%%%%%%%
+    \midrule
+    \end{tabular}%
+  \label{tab:reg}%
+\end{table}%
+
+
+%----------------------------------------
+%    3.Results and Conclusions
+%----------------------------------------
+
+\section{Results and Conclusions}
+We study ATE and MSE of different causal inference models from Table2 to Table4 in Section 2.3 under different number of observations and settings. By comparison, we can summarize the results as follows:
+\smallskip
+\smallskip
+
+\begin{enumerate}[(i)]
+\item By comparing ATE, since the initial setting is $Y \sim X + nonlinear/linear(Z)$, it's straightforward that we can assume the average treatment effect of X is around 1. In either scenario, no matter what $n$ is, the best three estimations which can derive ATE about 1 are Reg, Stack and Unstack, because there's no large deviation and all ATEs are larger tha n 0. 
+\item As sample size increases, all ATEs converge to 1. For n = 2000, the estimation can be ordered as: Unstack, Stack and Reg. For each sample size, Unstack provides best performance in nonlinear initial settings due to its flexible stacking.
+\item According to MSE, Reg preforms the best. DR, Stack, and Unstack also perform well, and it can be interpreted as it depends on the weighting on outcome regression model, which is also decided by the settings of simulations.
+\item Under each circumstance, the risk of fixed weighting in DR is presented, compared with Stack and Unstack. If the Reg is correctly defined while IPW is not, (for example, the third simulation with n=2000, in which Reg has ATE = 1.36 and IPW has IPW = -0.94) DR suffers a lot from fixed weighting and Stack and Unstack are affected far less.
+\end{enumerate}
+\smallskip
+\smallskip
+  
+These results illustrate that the risk of poor estimation of DR does come from fixed weighting, and more flexible weightings provide better average treatment effect estimators, especially in a nonlinear situation, or said, the assumption that at least one of two models is correctly specified is violated. However, the outcome regression is more stable and also has good predictive power in linearity.  
+
+%----------------------------------------
+%    4. Discussion
+%----------------------------------------
+\section{Discussion}
+The basic idea of doubly robust is to ensemble two basic model: OR and IPW, assuming that either $E(Y-\hat{Y})=0$ or $E(P(X=1 | Z)-X)=0$, or both of them are correct. Although the robustness works well in many aspects, it has a weakness of fixed weighting, which illustrates DR largly, directly depends on OR and IPW and lacks the ability of self-adjustment. Thus, we consider flexible weighting for DR.
+
+The constrained weighted stacking model and unconstrained weighted stacking model defined in the article show better performances compared with traditional DR when the assumption does not hold any more. And also, it presents that outcome regression is a simple but efficient method to estimate the marginal effect of treatment. Except for OLS ensemble, it's reasonable to apply machine learning to boost them one by one.  For example, using random forest to fit each basic model alternately, and derive residuals to train the ensemble model, which can obtain better weights to mimic the complicated real model.
+
+
+\section{Bibliography}
+[1] \href{https://github.com/jiamingmao/data-analysis/blob/master/Lectures/Foundations_of_Causal_Inference.pdf}{Jiaming Mao, “Foundations of Causal Inference”}
+
+\noindent[2] \href{http://www.stat.ncsu.edu/~davidian}{Marie Davidian, “Doubly Robustness in Estimation of Causal Treatment Effects”, Department of Statistics, North Carolina State University}
+
+\noindent[3] Romain Neugebauer, Mark van der Laan, “Why prefer double robust estimators in causal inference?”, \emph{Journal of Statistical Planning and Inference}, 129(2005) 405-426
+
+\noindent[4] Trevor Hastie, Robert Tibshirani, Jerome Friedman , “The Elements of Statistical Learning”, Springer ISBN: 9780387848570, 2009-10-01, 288-290
+
+\noindent[5] Michele J.F., Daniel Westreich, Chris Wiesen, Til Sturmer, M. Alan Brookhart,  Marie Davidian, “Doubly Robust Estimation of Causal Effects”, \emph{American Journal of Epidemiology}, Vol.173 No.7, DOI: 10.1093/aje/kwq439, 2011
+
+\end{document}
