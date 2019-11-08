@@ -1,0 +1,486 @@
+\documentclass{beamer}	% Compile at least twice!
+%\setbeamertemplate{navigation symbols}{}
+\usetheme{Warsaw}
+%\useinnertheme{rectangles}
+%\useoutertheme{infolines}
+\useoutertheme[title,section,subsection=true]{smoothbars}
+ 
+% -------------------
+% Packages
+% -------------------
+\usepackage{
+	amsmath,			% Math Environments
+	amssymb,			% Extended Symbols
+	enumerate,		    % Enumerate Environments
+	graphicx,			% Include Images
+	lastpage,			% Reference Lastpage
+	multicol,			% Use Multi-columns
+	multirow,			% Use Multi-rows
+	pifont,			    % For Checkmarks
+	stmaryrd			% For brackets
+}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{makecell}
+
+% -------------------
+% Colors
+% -------------------
+\definecolor{UniOrange}{RGB}{212,69,0}
+\definecolor{UniGray}{RGB}{62,61,60}
+%\definecolor{UniRed}{HTML}{B31B1B}
+%\definecolor{UniGray}{HTML}{222222}
+\setbeamercolor{title}{fg=UniGray}
+\setbeamercolor{frametitle}{fg=UniOrange}
+\setbeamercolor{structure}{fg=UniOrange}
+\setbeamercolor{section in head/foot}{bg=UniGray}
+\setbeamercolor{author in head/foot}{bg=UniGray}
+\setbeamercolor{date in head/foot}{fg=UniGray}
+\setbeamercolor{structure}{fg=UniOrange}
+\setbeamercolor{local structure}{fg=black}
+\beamersetuncovermixins{\opaqueness<1>{0}}{\opaqueness<2->{15}}
+
+
+% -------------------
+% Fonts & Layout
+% -------------------
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamertemplate{itemize items}[circle]
+%\setbeamertemplate{enumerate items}[default]
+
+
+% -------------------
+% Commands
+% -------------------
+
+% Special Characters
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+
+% Math Operators
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Span}{span}
+
+% Special Commands
+\newcommand{\pf}{\noindent\emph{Proof. }}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\defeq}{\stackrel{\text{def}}{=}}
+\newcommand{\ov}[1]{\overline{#1}}
+\newcommand{\ma}[1]{\stackrel{#1}{\longrightarrow}}
+\newcommand{\twomatrix}[4]{\begin{pmatrix} #1 & #2 \\ #3 & #4 \end{pmatrix}}
+
+
+% -------------------
+% Tikz & PGF
+% -------------------
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{
+	calc,
+	decorations.pathmorphing,
+	matrix,arrows,
+	positioning,
+	shapes.geometric
+}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+
+
+% -------------------
+% Theorem Environments
+% -------------------
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{lem}{Lemma}[section]
+\newtheorem{cor}{Corollary}[section]
+\theoremstyle{definition}
+\newtheorem{ex}{Example}[section]
+\newtheorem{nex}{Non-Example}[section]
+\newtheorem{dfn}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem{rem}{Remark}[section] 
+\numberwithin{equation}{section}
+
+
+% =================================================================================================================
+%                                                       Title Page
+% =================================================================================================================
+\title{\textcolor{white}{Approaches to Estimating Aggregate Demand for Reserve Balances}}
+\author{Presenter: Yao Weitong}
+\date{November 8, 2019} 
+
+
+% -------------------
+% Content
+% -------------------
+\begin{document}
+
+% Title Page
+\begin{frame}
+\titlepage
+\end{frame}
+
+% Contents
+\section{Contents}
+\begin{frame}{size = \large}
+	\begin{enumerate}[1.]%\setlength{\itemsep}{想要的值如15pt } 
+	\item Summary
+	\item Approaches for Estimation
+		\begin{itemize}\setlength{\itemsep}{3pt} 
+		\item Building the Point Estimate
+		\item Approach \uppercase\expandafter{\romannumeral1} : Stratified Sampling for Sampling Error
+		\item Approach \uppercase\expandafter{\romannumeral2}: Bootstrap for Non-Sampling Error
+		\end{itemize} 
+	\item Conclusion
+	\item Short Comings
+	\end{enumerate}  \vspace{0.5cm}
+\end{frame}
+
+
+% -------------------
+% Part 1: Summary
+% -------------------
+\section{Summary}
+
+\begin{frame}
+\frametitle{\textcolor{white}{Summary}}
+\small 
+The August 2019 Senior Financial Officer Surveys(SFOS) asked 77 banks to report the approximate lowest level of reserve balances(LCLoR), given the constellation of short-term interest rates.\\
+
+\vbox{} 
+Based on statistical methods applied in \href{https://www.federalreserve.gov/econres/notes/feds-notes/estimating-system-demand-for-reserve-balances-using-the-2018-senior-financial-officer-survey-20190409.htm}{\textcolor{UniOrange}{prior FEDS Notes}}, a point estimate for aggregate demanad, accouting for sampling and non-sampling error, is \$800 billion, ranging between \$712 billion and \$919 billion.\\
+
+\vbox{}
+These banks represented a range of asset sizes and business models, and the short-term interest rates include IOER, EFFR, SOFR, OBFR and Treasury bill rate.
+\end{frame}\vspace{0.5cm}
+
+
+% Why Does the Demand for Reserve Balances Matters?
+\begin{frame}
+\frametitle{\textcolor{white}{Why Does the Demand for Reserve Balances Matter?}}
+\scriptsize
+
+\begin{figure}[htbp]
+	\subfigure{
+	\begin{minipage}[t]{0.5\linewidth}
+	\includegraphics[width=2.2in]{1.png}
+	\end{minipage}%
+	}%
+	\subfigure{
+	\begin{minipage}[t]{0.5\linewidth}
+	\includegraphics[width=2.2in]{2.png}
+	\end{minipage}
+	}%
+\end{figure}
+
+An ample supply of reserves made the interest rate insensitive to OMO. Instead, overnight interest rates moved in line with administered rates.\\
+
+\vbox{}
+Reserve demand is driven by many factors and it changes continually, so reserve demand and  monetary policies codetermine what the interest rate is. \href{https://www.newyorkfed.org/newsevents/speeches/2019/log190417}{\textcolor{UniOrange}{(''Observation on Implementing Monetary Policy in an Ample-Reserves Regime'', Lorie K.Logan)}}
+
+\end{frame}\vspace{0.5cm}
+
+
+
+
+% -------------------
+% Part 2: Approaches
+% -------------------
+\section{Approaches}
+
+% 2.1 Building the Point Estimation
+\begin{frame}
+\frametitle{\textcolor{white}{Building the Point Estimation}}
+
+
+\small\textbf{Comparision ( just like ''Descriptive Statistics''):}
+
+\renewcommand\arraystretch{1.5}
+\begin{table} 
+	\scriptsize
+	\begin{center}  
+	\begin{tabular}{|l|l|l|l|}  
+	\hline  
+	      & SFOS Respondent Banks & Non-SFOS Banks & total \\ 
+ 	\hline  
+    LCLoR & 652 &  \multicolumn{2}{c|}{to be estimated}\\ 
+    \hline  
+    Total Reserve Bal. & 1152 & 334& 1486 \\ 
+    \hline
+    Total Asset & 12943 & 6840 & 19783\\  
+    \hline 
+    \multirow{4}*{Categories}  & \multicolumn{3}{l|}{(1)U.S. Global Systemically Important Banks(G-SIBs)}\\  
+    \cline{2-4}
+    ~ & \multicolumn{3}{l|}{(2)Large Domestic Banks}\\  
+    \cline{2-4}
+    ~ & \multicolumn{3}{l|}{(3)Small Domestic Banks}\\  
+    \cline{2-4}
+    ~ & \multicolumn{3}{l|}{(4)Foreign Banking Organizations(FBOs)}\\
+    \hline  
+	\end{tabular}  
+	\end{center}  
+\end{table}
+
+\scriptsize 77 SFOS banks have $\frac{3}{4}$ of reserve holdings, which is \$652 billion. The number of Non-SFOS banks is around 5200 but their size is only half of SFOS banks.
+
+\end{frame}\vspace{0.5cm}
+
+
+
+% Formula & Uncertainty
+\begin{frame}
+\frametitle{\textcolor{white}{Building the Point Estimation}}
+\small
+\textbf{Formulas for Estimation:}
+\begin{itemize}
+	\scriptsize
+	\item[(1)] SFOS category ratio = aggregate SFOS LCLoR / aggregate SFOS total assets
+	\item[(2)]
+	NonSFOS LCLoR estimate$_{i}=$ SFOS category ratio $\times \sum_{i}$ total 	assets\\
+	\item[(3)]aggregate point estimate = $\sum$ $LCLoR_i$ for SFOS + estimate of 	$LCLoR$ for NonSFOS
+	\item[*]The weights are relative to their size! Think about the Fed Reserve Ratio!
+\end{itemize}
+
+\vbox{}
+
+\textbf{Questions needed to be solved:}
+\begin{itemize}
+	\scriptsize
+	\item[(1)]\textbf{Sampling error} : comes from random selection of SFOS banks. 
+	\item[(2)]\textbf{Non-Sampling error} : this sample(SFOS banks) is not so representative.
+\end{itemize}
+
+\vbox{}
+\textbf{$\to$ Stratified Sampling , Multiple Imputation(Bootstrap)}
+
+\end{frame}
+
+% 2.2 Stratified Sampling
+\begin{frame}
+\frametitle{\textcolor{white}{Approach \uppercase\expandafter{\romannumeral1} : Stratified Sampling for Sampling Error}}
+\small
+
+\textbf{Setup: (''Sampling Techniques, Cochran, Chapter5 Section 5.1-5.4'')}
+\begin{itemize}
+	\scriptsize
+	\item[(1)]There are 4 categories, sorting into L = 4 layers.
+	\item[(2)]The size of population $N$ is 77. Suppose $N_{j}$ is number of units in $j th$ layer, thus $N_{1} + N_{2} + N_{3} + N_{4} = N = 77.$ 
+	\item[(3)]For each layer, random selection is applied for obtaining one series of observations as samples (a subset of all LCLoRs in each category). Suppose $n_{j}$ is number of units in sample for $j th$ layer, $y_{ij}$ is the $ith$ unit's value of LCLoR drawn from $j th$ layer.
+	\item[(4)]Stratum weight for $j th$ layer:  
+	
+	\begin{equation}
+	W_{j} = \frac{\text{total assets in j th category in population}}{\text{total population assets}}
+	\end{equation}
+	
+	true mean for $j th$ layer:
+	\begin{equation}
+	\bar{Y}_{j}=\frac{\sum_{i=1}^{N_{j}} y_{i j}}{N_{j}}
+	\end{equation}
+	
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{\textcolor{white}{Approach \uppercase\expandafter{\romannumeral1} : Stratified Sampling for Sampling Error}}
+\small
+\textbf{Setup: (Continued)}
+
+\begin{itemize}
+	\scriptsize
+	\item[(4)]sample mean for $j th$ layer:
+	\begin{equation}
+	\bar{y}_{j}=\frac{\sum_{i=1}^{n_{j}} y_{i j}}{n_{j}}
+	\end{equation}
+	
+	true variance for $j th$ layer:
+	\begin{equation}
+	S_{j}^{2}=\frac{\sum_{i=1}^{N_{j}}\left(y_{i j}-\bar{Y}_{j}\right)^{2}}{N_{j}-1}
+	\end{equation}
+\end{itemize}
+
+\textbf{Properties}
+
+\begin{itemize}
+	\scriptsize
+	\item If in every layer the sample estimate $\bar{y}_{j}$ is unbiased, then population mean per unit $\bar{y}_{s t}$ is an unbiased estimate of population mean $\bar{Y}$ \textbf{(mean of aggregate LCLoR for SFOC!)}: 
+	\begin{equation}
+	\bar{y}_{s t}=\frac{\sum_{j=1}^{L} N_{j} \bar{y}_{j}}{N}=\sum_{j=1}^{L} W_{j} \bar{y}_{j} \approx \bar{Y}
+	\end{equation}
+	
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{\textcolor{white}{Approach \uppercase\expandafter{\romannumeral1} : Stratified Sampling for Sampling Error}}
+\small
+\textbf{Properties: (Continued)}
+
+\begin{itemize}
+	\scriptsize
+	
+	\item For stratified sampling, variance of $\bar{y}_{s t}$ and its approximation $s^{2}\left(\bar{y}_{s t}\right)$ \textbf{(now we know the standard error!)}:
+	\begin{equation}
+	V\left(\bar{y}_{s t}\right)=\frac{1}{N^{2}} \sum_{j=1}^{L} N_{j}\left(N_{j}-n_{j}\right) \frac{S_{j}^{2}}{n_{j}}=\sum_{j=1}^{L} W_{j}^{2} \frac{S_{j}^{2}}{n_{j}}\left(1-\frac{n_{j}}{N_{j}}\right)
+	\end{equation}
+	
+	\begin{equation}
+s^{2}\left(\bar{y}_{s t}\right)=\sum_{j=1}^{L} \frac{W_{j}^{2} s_{j}^{2}}{n_{j}}-\sum_{j=1}^{L} \frac{W_{j} s_{j}^{2}}{N}
+	\end{equation}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{\textcolor{white}{Approach \uppercase\expandafter{\romannumeral1} : Stratified Sampling for Sampling Error}}
+\small
+
+\textbf{Estimation: \href{https://pdfs.semanticscholar.org/af4b/3d01c44d7a404f64aa6b8da49cdbc8cb0759.pdf}{\textcolor{UniOrange}{(df part comes from F.E.Satterthwaite)}}}
+
+\begin{itemize}
+	\scriptsize
+	\item[*] Assumption (1) : $\bar{y}_{s t} \sim $Normal Distribution, so MSE$^{2} \sim \chi^{2}$ (and variance of $\chi^{2}$ would be a good approximation for variance of Complex Estimate)
+	\item[*] Assumption (2) : Compute standard error $s(\bar{y}_{s t})$ by Student t-statistics because of only a few degrees of freedom
+	\item 
+	
+	\begin{equation}
+s^{2}\left(\bar{y}_{s t}\right)=\frac{1}{N^{2}} \sum_{j=1}^{L} g_{j} s_{j}^{2}, \quad \text { where } g_{j}=\frac{N_{j}\left(N_{j}-n_{j}\right)}{n_{j}}
+	\end{equation}
+	
+	the degree of freedom is :
+	\begin{equation}
+df=\frac{\left(\sum g_{j} s_{j}^{2}\right)^{2}}{\sum \frac{g_{j}^{2} s_{j}^{4}}{n_{j}-1}}
+    \end{equation}
+    and the result for range of aggregate LCLoR is:
+    \begin{equation}
+\bar{y}_{s t} \pm t s\left(\bar{y}_{s t}\right)
+	\end{equation}
+    
+\end{itemize}
+
+\end{frame}
+
+
+
+% 2.3 Bootstrap
+\begin{frame}
+
+\frametitle{\textcolor{white}{Approach \uppercase\expandafter{\romannumeral2} : Bootstrap for Non-Sampling Error}}
+
+\small
+\textbf{Introduction of Bootstrap:}
+\begin{itemize}\setlength{\itemsep}{1pt} 
+	\scriptsize
+
+	\item[*]\textbf{resampling to rebuild a new sample, which can represent the distribution of original sample}
+	\item[(1)]\textbf{Characteristics :} 
+ 	\begin{itemize}\setlength{\itemsep}{1pt} 
+ 	\scriptsize
+	\item Distribution assumption is not necessary
+ 	\item Returning drawn observations to the data sample after they have been chosen \quad (some observations may repeat themselves, but it can ensure identical sample size!)
+ 	\end{itemize}
+
+ 	\item[(2)]\textbf{Service Condition :} small data set, or difficult to classify
+ 	
+ 	\item[(3)]\textbf{Limitation :} different drawing leads different distribution
+\end{itemize}
+
+\textbf{Relative Formula:}\\
+\begin{itemize}\setlength{\itemsep}{1pt} 
+\scriptsize
+\item[]
+ NonSFOS LCLoR estimate$_{i}=$ \textcolor{blue}{SFOS category ratio *} $\times \sum_{i}$ total 	assets\\
+\item[]
+Bootstrap can derive a normal distribution for estimating \textcolor{blue}{ SFOS category ratio *}
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{\textcolor{white}{Approach \uppercase\expandafter{\romannumeral2} : Bootstrap for Non-Sampling Error}}
+\scriptsize
+''by multiplying individual non-SFOS bank's total assets..., but rather is a randomly selected survey response to total asset ratio for an individual SFOS bank in the appropriate category...''\\
+\vbox{}
+
+\small \textbf{Procedures:}
+\begin{itemize}
+\scriptsize
+\item[Step 1] 
+Suppose the individual SFOS ratio ($\frac{\text{individual SFOS LCLoR}}{\text{individual SFOS asset}}$) is [y1, y2, ..., y77], and they all follow an unknown distribution (iid). 
+
+\item[Step 2]
+For the $i$ th sampling, we resample 10 times, noted as $X*_{i} = [X*_{i 1}, X*_{i 2}, ...,X*_{i 10}]$, so the size of each sample is 10. \\
+We use 10-units sample to calculate individual SFOS ratio, noted as $\hat{Y}_{i}$
+
+\item[Step 3]
+Repeat Step 2 for 1000 times, we can obtain 1000 estimates for individual SFOS ratio, and the number is large enough to build a normal distribution (central limit theorem):
+\begin{equation}
+\bar{Y} \approx \frac{1}{1000} \sum_{i=1}^{1000} \hat{Y}_{i} \quad var(Y) \approx \frac{1}{1000-1} \sum_{i=1}^{1000} (\hat{Y}_{i}-\bar{Y}_{i})^{2}
+\end{equation}
+
+\end{itemize}
+\end{frame}
+
+
+% -------------------
+% Part 3 : Conclusion
+% -------------------
+\section{Conclusion}
+\begin{frame}
+\frametitle{\textcolor{white}{Conclusions}}
+\small
+Accounting for sampling error and non-sampling error, the point estimate for aggregate reserve demand is \$800 billion, ranging from \$712 billion to \$919 billion.
+
+\begin{figure}[htbp] 
+\centering
+\includegraphics[width=4in]{3.png} 
+\end{figure} 
+
+\end{frame}
+
+% -------------------
+% Part 4: Short Comings 
+% -------------------
+\section{Short Comings}
+\begin{frame}
+\frametitle{\textcolor{white}{Short Comings}}
+
+\small
+\textbf{Short Comings: may be underestimated!}
+\begin{itemize}
+\item[1.] Estimating non-sampling error for G-SIB and FBO.
+\item[2.] Relying on data reported at a point in time.\\
+(the asset data are as of March, 2019, while SFOS was conduted in Aug, 2019)
+\item[3.] Assuming perfect money market efficiency and there are no additional factors affecting supply side.
+\end{itemize}
+
+\end{frame}
+
+
+% Questions
+\begin{frame}
+\begin{center} {\bfseries \Large Thanks for Your Attention} \end{center}
+\vbox{}
+\begin{center} {\bfseries \Large Q \& A ?} \end{center}
+\end{frame}
+
+
+\end{document}
